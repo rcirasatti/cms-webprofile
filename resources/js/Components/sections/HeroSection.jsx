@@ -1,10 +1,22 @@
 import React from "react";
 
-const HeroSection = ({ handleExploreClick, content = {} }) => {
-    // Use default values since we're now using dedicated tables
-    const title = 'Welcome to OmahIoT';
-    const subtitle = 'Transforming Ideas into Solutions with IoT and Digital Innovation';
-    const buttonText = 'Explore Our Solutions';
+const HeroSection = ({ handleExploreClick, content = [] }) => {
+    // Helper to read value whether `content` is an array of {key,value} or an object
+    const getValue = (key, altKey) => {
+        if (Array.isArray(content)) {
+            const found = content.find((c) => c.key === key || (altKey && c.key === altKey));
+            return found?.value;
+        }
+        if (content && typeof content === 'object') {
+            return content[key] ?? (altKey ? content[altKey] : undefined);
+        }
+        return undefined;
+    };
+
+    // Use CMS-provided values when available, otherwise fall back to hard-coded defaults
+    const title = getValue('title', 'hero_title') || 'Welcome to OmahIoT';
+    const subtitle = getValue('subtitle', 'hero_subtitle') || 'Transforming Ideas into Solutions with IoT and Digital Innovation';
+    const buttonText = getValue('button_text', 'buttonText') || 'Explore Our Solutions';
 
 return (
     <section

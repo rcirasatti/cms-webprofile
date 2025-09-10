@@ -150,6 +150,55 @@ class CmsController extends Controller
         return Inertia::render('CMS/Hero', ['contents' => $contents]);
     }
 
+    public function updateHero(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
+            'button_text' => 'nullable|string|max:100',
+            // allow either a URL/string or an uploaded image file
+            'background_image' => 'nullable',
+            'background_image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // prefer uploaded file when present
+        $bgValue = $request->background_image;
+        if ($request->hasFile('background_image')) {
+            $image = $request->file('background_image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/uploads'), $imageName);
+            $bgValue = '/assets/images/uploads/' . $imageName;
+        }
+
+        $data = [
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'button_text' => $request->button_text,
+            'background_image' => $bgValue,
+        ];
+
+        // Update or create each content item
+        foreach ($data as $key => $value) {
+            if ($value !== null && $value !== '') {
+                LandingPageContent::updateOrCreate(
+                    [
+                        'section' => 'hero',
+                        'key' => $key
+                    ],
+                    [
+                        'value' => $value,
+                        'is_active' => true,
+                        'order' => $this->getOrderForKey($key),
+                        'content_type' => $key === 'background_image' ? 'image' : 'text',
+                        'metadata' => $key === 'background_image' ? ['alt' => 'Hero Background'] : null
+                    ]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Hero content updated successfully!');
+    }
+
     public function about()
     {
         $contents = LandingPageContent::bySection('about')->ordered()->get();
@@ -184,5 +233,27 @@ class CmsController extends Controller
     {
         $activities = \App\Services\ActivityService::getRecentActivities(50); // Get more activities for the full list
         return Inertia::render('CMS/Activities', ['activities' => $activities]);
+    }
+
+    /**
+     * Determine a sensible order for common hero keys.
+     * Falls back to max(order)+1 for the section if key is unknown.
+     */
+    private function getOrderForKey(string $key)
+    {
+        $mapping = [
+            'title' => 1,
+            'subtitle' => 2,
+            'button_text' => 3,
+            'background_image' => 4,
+        ];
+
+        if (isset($mapping[$key])) {
+            return $mapping[$key];
+        }
+
+        // fallback: place at the end of the hero section
+        $max = LandingPageContent::where('section', 'hero')->max('order');
+        return $max ? $max + 1 : 1;
     }
 }

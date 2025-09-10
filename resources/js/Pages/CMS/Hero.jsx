@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ContentForm from '@/Components/CMS/ContentForm';
-import { Head, Link } from '@inertiajs/react';
-import { useForm } from '@inertiajs/react';
+import HeroForm from '@/Components/CMS/HeroForm';
+import { Head } from '@inertiajs/react';
 
 export default function Hero({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
-    const [editingContent, setEditingContent] = useState(null);
-    const { delete: deleteContent } = useForm();
 
     // Extract hero content for preview
     const title = contents.find(content => content.key === 'title')?.value || 'Welcome to OmahIoT';
@@ -19,20 +16,8 @@ export default function Hero({ auth, contents }) {
         alert('This is a preview of how the hero section will appear on your landing page');
     };
 
-    const handleEdit = (content) => {
-        setEditingContent(content);
-        setShowForm(true);
-    };
-
-    const handleDelete = (content) => {
-        if (confirm('Are you sure you want to delete this content?')) {
-            deleteContent(route('cms.content.destroy', content.id));
-        }
-    };
-
     const handleCloseForm = () => {
         setShowForm(false);
-        setEditingContent(null);
     };
 
     return (
@@ -49,17 +34,11 @@ export default function Hero({ auth, contents }) {
                                     <p className="text-gray-600">Manage hero section content</p>
                                 </div>
                                 <div className="flex space-x-3">
-                                    <Link
-                                        href={route('cms.sections')}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                    >
-                                        ← Back to Sections
-                                    </Link>
                                     <button
                                         onClick={() => setShowForm(true)}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        Add New Content
+                                        Edit Hero Content
                                     </button>
                                 </div>
                             </div>
@@ -73,52 +52,37 @@ export default function Hero({ auth, contents }) {
                                         onClick={() => setShowForm(true)}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        Add Hero Content
+                                        Setup Hero Content
                                     </button>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
-                                    {contents.map((content) => (
-                                        <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-2">
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                            {content.key}
-                                                        </span>
-                                                        <span className="text-sm text-gray-500">Order: {content.order}</span>
-                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                            content.is_active 
-                                                                ? 'bg-green-100 text-green-800' 
-                                                                : 'bg-red-100 text-red-800'
-                                                        }`}>
-                                                            {content.is_active ? 'Active' : 'Inactive'}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-gray-900 mb-2">{content.value}</p>
-                                                    {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                                        <div className="text-sm text-gray-600">
-                                                            <strong>Metadata:</strong> {JSON.stringify(content.metadata)}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex space-x-2 ml-4">
-                                                    <button
-                                                        onClick={() => handleEdit(content)}
-                                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(content)}
-                                                        className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
+                                <div className="space-y-6">
+                                    {/* Current Content Summary */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-3">📋 Current Content</h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Title:</span>
+                                                <p className="text-gray-900 mt-1">{title}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Subtitle:</span>
+                                                <p className="text-gray-900 mt-1">{subtitle}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Button Text:</span>
+                                                <p className="text-gray-900 mt-1">{buttonText}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Background Image:</span>
+                                                <p className="text-gray-900 mt-1 text-sm break-all">
+                                                    {contents.find(c => c.key === 'background_image')?.value || 'No image set'}
+                                                </p>
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
+
+                                  
                                 </div>
                             )}
 
@@ -201,9 +165,8 @@ export default function Hero({ auth, contents }) {
             </div>
 
             {showForm && (
-                <ContentForm
-                    content={editingContent}
-                    section="hero"
+                <HeroForm
+                    contents={contents}
                     onCancel={handleCloseForm}
                 />
             )}

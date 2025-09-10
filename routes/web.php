@@ -110,6 +110,7 @@ Route::middleware('auth')->group(function () {
         
         // Individual section routes
         Route::get('/hero', [CmsController::class, 'hero'])->name('hero');
+        Route::post('/hero/update', [CmsController::class, 'updateHero'])->name('hero.update');
         Route::get('/about', [CmsController::class, 'about'])->name('about');
         Route::get('/project', [ProjectController::class, 'index'])->name('project');
         Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio');
