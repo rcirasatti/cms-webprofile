@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 
 export default function ContentForm({ content = null, section, onCancel }) {
     const { data, setData, post, patch, processing, errors, reset } = useForm({
@@ -9,36 +9,86 @@ export default function ContentForm({ content = null, section, onCancel }) {
         metadata: content?.metadata || {},
         order: content?.order || 0,
         is_active: content?.is_active ?? true,
+        content_type: content?.content_type || 'text',
+        image: null,
     });
 
     const [metadataJson, setMetadataJson] = useState(
         content?.metadata ? JSON.stringify(content.metadata, null, 2) : '{}'
     );
 
+    const [isImageType, setIsImageType] = useState(
+        content?.content_type === 'image' || 
+        (content?.key && (content.key.includes('image') || content.key.includes('logo')))
+    );
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
         try {
-            const parsedMetadata = JSON.parse(metadataJson);
-            setData('metadata', parsedMetadata);
+            const formData = new FormData();
+            formData.append('section', data.section);
+            formData.append('key', data.key);
+            formData.append('value', data.value);
+            
+            // Send metadata as string - backend will handle JSON parsing
+            const metadataToSend = metadataJson && metadataJson.trim() !== '' ? metadataJson : '{}';
+            formData.append('metadata', metadataToSend);
+            
+            formData.append('order', data.order);
+            formData.append('is_active', data.is_active ? '1' : '0');
+            formData.append('content_type', isImageType ? 'image' : 'text');
+            
+            if (data.image) {
+                formData.append('image', data.image);
+            }
+            
+            // Debug: Log form data
+            console.log('Form data being sent:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            console.log('Content ID:', content?.id);
             
             if (content) {
-                patch(route('cms.content.update', content.id), {
-                    onSuccess: () => {
+                // For updates, use post with _method PATCH for FormData uploads
+                formData.append('_method', 'PATCH');
+                
+                router.post(route('cms.content.update', content.id), formData, {
+                    forceFormData: true,
+                    onSuccess: (page) => {
+                        console.log('Update successful:', page);
+                        alert('Content updated successfully!');
                         reset();
                         onCancel();
+                        // Reload the page to see changes
+                        window.location.reload();
+                    },
+                    onError: (errors) => {
+                        console.error('Update failed:', errors);
+                        alert('Failed to update content: ' + JSON.stringify(errors));
                     }
                 });
             } else {
-                post(route('cms.content.store'), {
-                    onSuccess: () => {
+                router.post(route('cms.content.store'), formData, {
+                    forceFormData: true,
+                    onSuccess: (page) => {
+                        console.log('Create successful:', page);
+                        alert('Content created successfully!');
                         reset();
                         onCancel();
+                        // Reload the page to see changes
+                        window.location.reload();
+                    },
+                    onError: (errors) => {
+                        console.error('Create failed:', errors);
+                        alert('Failed to create content: ' + JSON.stringify(errors));
                     }
                 });
             }
         } catch (error) {
-            alert('Invalid JSON in metadata field');
+            console.error('Form submission error:', error);
+            alert('Error submitting form: ' + error.message);
         }
     };
 
@@ -78,16 +128,53 @@ export default function ContentForm({ content = null, section, onCancel }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Value</label>
-                            <textarea
-                                value={data.value}
-                                onChange={(e) => setData('value', e.target.value)}
-                                rows={4}
-                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                required
-                                placeholder="Enter the content value"
-                            />
-                            {errors.value && <p className="text-red-500 text-sm mt-1">{errors.value}</p>}
+                            <div className="flex items-center space-x-4 mb-2">
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={isImageType}
+                                        onChange={(e) => setIsImageType(e.target.checked)}
+                                        className="mr-2"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">This is an image field</span>
+                                </label>
+                            </div>
+                            
+                            {isImageType ? (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setData('image', e.target.files[0])}
+                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                    {content?.value && content.value.startsWith('/assets/') && (
+                                        <div className="mt-2">
+                                            <p className="text-sm text-gray-600">Current image:</p>
+                                            <img 
+                                                src={content.value} 
+                                                alt="Current" 
+                                                className="mt-1 h-20 w-20 object-cover rounded border"
+                                            />
+                                        </div>
+                                    )}
+                                    {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Value</label>
+                                    <textarea
+                                        value={data.value}
+                                        onChange={(e) => setData('value', e.target.value)}
+                                        rows={4}
+                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        required={!isImageType}
+                                        placeholder="Enter the content value"
+                                    />
+                                    {errors.value && <p className="text-red-500 text-sm mt-1">{errors.value}</p>}
+                                </div>
+                            )}
                         </div>
 
                         <div>

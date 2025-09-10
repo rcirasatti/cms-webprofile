@@ -21,6 +21,11 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password123'),
         ]);
 
+        // Transfer existing data from landing_page_contents to dedicated tables
+        $this->call([
+            TransferDataSeeder::class,
+        ]);
+
         // Create sample pages
     }
 }

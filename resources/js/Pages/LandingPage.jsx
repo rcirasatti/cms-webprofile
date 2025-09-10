@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 import HeroSection from '@/Components/sections/HeroSection';
@@ -7,117 +7,12 @@ import ProjectsSection from '@/Components/sections/ProjectsSection';
 import PortfolioSection from '@/Components/sections/PortfolioSection';
 import ClientsSection from '@/Components/sections/ClientsSection';
 import ContactSection from '@/Components/sections/ContactSection';
-import axios from 'axios';
 import { Head } from '@inertiajs/react';
 
-export default function LandingPage() {
-    const [content, setContent] = useState({});
-    const [loading, setLoading] = useState(true);
+export default function LandingPage({ content = {} }) {
     const [activeFilter, setActiveFilter] = useState("all");
 
-    useEffect(() => {
-        fetchContent();
-    }, []);
-
-    const fetchContent = async () => {
-        try {
-            const response = await axios.get('/api/landing-page');
-            setContent(response.data.data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching content:', error);
-            // Fallback data if API fails
-            setContent({
-                hero: [
-                    { key: 'title', value: 'Welcome to OmahIoT', metadata: {} },
-                    { key: 'subtitle', value: 'IoT Solutions & Digital Innovation', metadata: {} }
-                ],
-                navbar: [
-                    { key: 'logo_text', value: 'OmahIoT', metadata: {} }
-                ]
-            });
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl">Loading...</div>
-            </div>
-        );
-    }
-
-    const projects = [
-        {
-            title: "MOKO",
-            description: "MOKO memudahkan pengelolaan kolam koi",
-            image: "/assets/images/koi1-1.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "AUTOFEEDER",
-            description: "Meningkatkan kualitas berbagai jenis ikan",
-            image: "/assets/images/autofeeder1-1.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "MONIK",
-            description: "MONIK memudahkan pengelolaan greenhouse",
-            image: "/assets/images/hidroponik1-1.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "MOBAN",
-            description: "MOBAN membantu memantau curah hujan di tempat yang rawan.",
-            image: "/assets/images/monitoringhujan.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "MANIS",
-            description: "MANIS memudahkan pengelolaan lahan pertanian.",
-            image: "/assets/images/penyiraman1-1.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "MOCKA",
-            description: "MOCKA untuk kandang ayam closed house dan konvensional",
-            image: "/assets/images/kandangayam1-1.png",
-            category: "IoT Solution",
-        },
-        {
-            title: "WEBSITE",
-            description: "Jasa pembuatan custom website",
-            image: "/assets/images/website.png",
-            category: "Digital Solution",
-        },
-        {
-            title: "ANDROID",
-            description: "Jasa pembuatan custom android",
-            image: "/assets/images/androidd.png",
-            category: "Digital Solution",
-        },
-    ];
-
-    const filteredProjects = activeFilter === "all" 
-        ? projects 
-        : projects.filter(project => project.category === activeFilter);
-
-    const logos = [
-        { src: "/assets/images/logo/bawen.png", alt: "Bawen" },
-        { src: "/assets/images/logo/hab.png", alt: "HAB" },
-        { src: "/assets/images/logo/jgkoi.jpg", alt: "JG Koi" },
-        { src: "/assets/images/logo/kartika.jpg", alt: "Kartika" },
-        { src: "/assets/images/logo/kois.png", alt: "Kois" },
-        { src: "/assets/images/logo/logo_mkc.jpg", alt: "MKC" },
-        { src: "/assets/images/logo/logoznamalaysiaasli.jpg", alt: "ZNA Malaysia" },
-        { src: "/assets/images/logo/mustika.png", alt: "Mustika" },
-        { src: "/assets/images/logo/polines.png", alt: "Polines" },
-        { src: "/assets/images/logo/renadjaja.jpg", alt: "Renadjaja" },
-        { src: "/assets/images/logo/turus.png", alt: "Turus" },
-        { src: "/assets/images/logo/singaporekoishow.jpg", alt: "Singapore Koi Show" },
-    ];
-
+    // Handle smooth scroll to About section
     const handleExploreClick = () => {
         const aboutSection = document.getElementById("about");
         if (aboutSection) {
@@ -133,22 +28,27 @@ export default function LandingPage() {
     };
 
     return (
-        <>
+        <main className="App min-h-screen bg-gradient-to-b from-[#F5F8F5] via-[#EDF3EC] to-[#E8EFEA] relative">
+            {/* Background grid pattern */}
+            <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptMCAyYTQgNCAwIDEwMCA4IDQgNCAwIDAwMC04eiIgZmlsbD0icmdiYSg3NCwxMDMsNjUsMC4wOCkiLz48L2c+PC9zdmc+')] opacity-20 -z-10" />
+            <div className="fixed inset-0 bg-gradient-to-t from-[#E8EFEA] via-transparent to-transparent opacity-50 -z-10" />
+            
             <Head title="Landing Page" />
             <div className="w-full">
-                <Navbar />
-                <HeroSection handleExploreClick={handleExploreClick} />
-                <AboutSection />
+                <Navbar content={content.navbar || []} />
+                <HeroSection handleExploreClick={handleExploreClick} content={content.hero || []} />
+                <AboutSection content={content.about || []} />
                 <ProjectsSection 
                     activeFilter={activeFilter} 
                     setActiveFilter={setActiveFilter} 
-                    filteredProjects={filteredProjects}
+                    filteredProjects={[]}
+                    content={content}
                 />
-                <PortfolioSection />
-                <ClientsSection logos={logos} />
-                <ContactSection />
-                <Footer />
+                <PortfolioSection content={content.portfolios || []} />
+                <ClientsSection content={content} />
+                <ContactSection content={content.contact || []} />
+                <Footer content={content.footer || []} />
             </div>
-        </>
+        </main>
     );
 }

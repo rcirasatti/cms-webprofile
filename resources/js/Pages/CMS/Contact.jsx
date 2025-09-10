@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import SidebarLayout from '@/Layouts/SidebarLayout';
 import ContentForm from '@/Components/CMS/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
@@ -26,13 +26,12 @@ export default function Contact({ auth, contents }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <SidebarLayout user={auth.user}>
             <Head title="Contact Section - CMS" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+            <div className="p-6">
+                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
                                 <div>
                                     <h1 className="text-2xl font-bold text-gray-800">Contact Section</h1>
@@ -133,7 +132,6 @@ export default function Contact({ auth, contents }) {
                         </div>
                     </div>
                 </div>
-            </div>
 
             {showForm && (
                 <ContentForm
@@ -142,6 +140,6 @@ export default function Contact({ auth, contents }) {
                     onCancel={handleCloseForm}
                 />
             )}
-        </AuthenticatedLayout>
+        </SidebarLayout>
     );
 }

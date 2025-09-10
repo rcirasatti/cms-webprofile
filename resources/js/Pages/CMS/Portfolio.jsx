@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import SidebarLayout from '@/Layouts/SidebarLayout';
 import ContentForm from '@/Components/CMS/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
@@ -28,7 +28,7 @@ export default function Portfolio({ auth, contents }) {
     const portfolioItems = contents.filter(content => content.key.startsWith('portfolio_'));
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <SidebarLayout>
             <Head title="Portfolio Section - CMS" />
 
             <div className="py-12">
@@ -165,6 +165,6 @@ export default function Portfolio({ auth, contents }) {
                     onCancel={handleCloseForm}
                 />
             )}
-        </AuthenticatedLayout>
+        </SidebarLayout>
     );
 }

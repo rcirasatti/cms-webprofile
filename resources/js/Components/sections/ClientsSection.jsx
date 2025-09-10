@@ -1,6 +1,18 @@
 import React from "react";
 
-const ClientsSection = ({ logos }) => {
+const ClientsSection = ({ content = {} }) => {
+  // Get clients from the new structured data
+  const clients = content.clients || [];
+
+  // Use default title since we're now using dedicated tables
+  const title = 'Our Partners & Clients';
+
+  // Create logos array from clients data
+  const logos = clients.map(client => ({
+    src: client.logo_path,
+    alt: client.name
+  }));
+
   return (
     <section id="clients" className="py-24 bg-gradient-to-br from-[#f8f9fa] via-[#f5f8f5] to-white relative overflow-hidden">
       {/* Background Pattern */}
@@ -18,7 +30,7 @@ const ClientsSection = ({ logos }) => {
           <div className="inline-block relative mb-4">
             <span className="block text-[#4A6741] font-medium text-lg mb-3 animate-fade-in">TRUSTED BY INDUSTRY LEADERS</span>
             <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F] leading-tight animate-fade-in-delay-1">
-              Our Partners & Clients
+              {title}
             </h2>
             {/* Decorative underline */}
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#2C3A2F] to-[#4A6741] rounded-full"></div>

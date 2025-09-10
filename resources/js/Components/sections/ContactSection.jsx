@@ -1,7 +1,13 @@
 import React from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 
-const ContactSection = () => {
+const ContactSection = ({ content = {} }) => {
+    // Use default values since we're now using dedicated tables
+    const title = 'Contact Us';
+    const email = 'omahiot@gmail.com';
+    const phone = '+62 8127-6253-242';
+    const address = 'Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota Semarang, Jawa Tengah 50277';
+
   return (
     <section
       id="contact"
@@ -14,7 +20,7 @@ const ContactSection = () => {
 
       <div className="container mx-auto px-4 relative">
         <div className="max-w-xl mx-auto text-center mb-16">
-          <h2 className="text-4xl font-bold mb-6 text-white">Contact Us</h2>
+          <h2 className="text-4xl font-bold mb-6 text-white">{title}</h2>
           <p className="text-lg text-white/90 leading-relaxed">
             Tertarik dengan layanan kami? Hubungi kami sekarang untuk konsultasi
             gratis dan temukan solusi terbaik untuk bisnis Anda.
@@ -40,10 +46,10 @@ const ContactSection = () => {
                       24/7 Support
                     </p>
                     <a
-                      href="mailto:omahiot@gmail.com"
+                      href={`mailto:${email}`}
                       className="text-base font-medium text-primary hover:text-primary/80 transition-all duration-300"
                     >
-                      omahiot@gmail.com
+                      {email}
                     </a>
                   </div>
                 </div>
@@ -66,10 +72,10 @@ const ContactSection = () => {
                       Mon-Fri, 9-5
                     </p>
                     <a
-                      href="tel:+62 8127-6253-242"
+                      href={`tel:${phone}`}
                       className="text-base font-medium text-primary hover:text-primary/80 transition-all duration-300"
                     >
-                      +62 8127-6253-242
+                      {phone}
                     </a>
                   </div>
                 </div>
@@ -92,8 +98,7 @@ const ContactSection = () => {
                       Office Location
                     </p>
                     <p className="text-base font-medium text-primary hover:text-primary/80 transition-all duration-300">
-                      Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota
-                      Semarang, Jawa Tengah 50277
+                      {address}
                     </p>
                   </div>
                 </div>

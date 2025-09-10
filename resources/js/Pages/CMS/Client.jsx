@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import SidebarLayout from '@/Layouts/SidebarLayout';
 import ContentForm from '@/Components/CMS/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
@@ -25,131 +25,192 @@ export default function Client({ auth, contents }) {
         setEditingContent(null);
     };
 
-    const clientItems = contents.filter(content => content.key.startsWith('client_'));
+    // Group clients by their ID number (client_1, client_2, etc.)
+    const clientsMap = {};
+    const otherContents = [];
+    
+    contents.forEach(content => {
+        if (content.key.startsWith('client_')) {
+            const match = content.key.match(/client_(\d+)_(.+)/);
+            if (match) {
+                const clientId = match[1];
+                const field = match[2];
+                
+                if (!clientsMap[clientId]) {
+                    clientsMap[clientId] = { id: clientId };
+                }
+                
+                clientsMap[clientId][field] = content.value;
+                clientsMap[clientId][`${field}_content_id`] = content.id;
+                clientsMap[clientId][`${field}_content`] = content;
+                if (content.metadata) {
+                    clientsMap[clientId][`${field}_metadata`] = content.metadata;
+                }
+            } else if (content.key.match(/client_\d+$/)) {
+                // Handle client_1, client_2 directly
+                const clientId = content.key.replace('client_', '');
+                
+                if (!clientsMap[clientId]) {
+                    clientsMap[clientId] = { id: clientId };
+                }
+                
+                clientsMap[clientId]['name'] = content.value;
+                clientsMap[clientId]['name_content_id'] = content.id;
+                clientsMap[clientId]['name_content'] = content;
+                
+                if (content.metadata && content.metadata.logo) {
+                    clientsMap[clientId]['logo'] = content.metadata.logo;
+                }
+            }
+        } else {
+            otherContents.push(content);
+        }
+    });
+    
+    // Convert to array for easier mapping
+    const clients = Object.values(clientsMap);
+    const title = contents.find(c => c.key === 'title')?.value || 'Our Clients';
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <SidebarLayout user={auth.user}>
             <Head title="Clients Section - CMS" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            <div className="flex justify-between items-center mb-6">
-                                <div>
-                                    <h1 className="text-2xl font-bold text-gray-800">Clients Section</h1>
-                                    <p className="text-gray-600">Manage client logos and information</p>
-                                </div>
-                                <div className="flex space-x-3">
-                                    <Link
-                                        href={route('cms.sections')}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                    >
-                                        ← Back to Sections
-                                    </Link>
-                                    <button
-                                        onClick={() => setShowForm(true)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        Add Client
-                                    </button>
-                                </div>
-                            </div>
+            <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-800">Clients Section</h1>
+                            <p className="text-gray-600">Manage client logos and information</p>
+                        </div>
+                        <div className="flex space-x-3">
+                            <Link
+                                href={route('cms.sections')}
+                                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                ← Back to Sections
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    setEditingContent(null);
+                                    setShowForm(true);
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                Add New Client
+                            </button>
+                        </div>
+                    </div>
 
-                            <div className="space-y-4">
-                                {contents.map((content) => (
-                                    <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
-                                                        {content.key}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">Order: {content.order}</span>
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        content.is_active 
-                                                            ? 'bg-green-100 text-green-800' 
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {content.is_active ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-900 mb-2 font-medium">{content.value}</p>
-                                                {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                                    <div className="text-sm text-gray-600 space-y-1">
-                                                        {content.metadata.logo && (
-                                                            <p><strong>Logo:</strong> {content.metadata.logo}</p>
-                                                        )}
-                                                        {content.metadata.website && (
-                                                            <p><strong>Website:</strong> {content.metadata.website}</p>
-                                                        )}
-                                                        {content.metadata.description && (
-                                                            <p><strong>Description:</strong> {content.metadata.description}</p>
-                                                        )}
-                                                    </div>
-                                                )}
+                    {/* Title Setting */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-lg font-medium text-gray-900">Section Title: {title}</h2>
+                            </div>
+                            <button
+                                onClick={() => handleEdit(contents.find(c => c.key === 'title'))}
+                                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                                Edit Title
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Clients Table */}
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Client ID
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Name
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Logo
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {clients.map((client) => {
+                                    const content = client.name_content;
+                                    return (
+                                    <tr key={client.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {client.id}
                                             </div>
-                                            <div className="flex space-x-2 ml-4">
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-900">
+                                                {client.name || '-'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {client.logo ? (
+                                                <img 
+                                                    src={client.logo} 
+                                                    alt={client.name || `Client ${client.id}`}
+                                                    className="h-10 w-16 object-contain rounded"
+                                                />
+                                            ) : (
+                                                <div className="text-sm text-gray-500">No logo</div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {content && (
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                    content.is_active 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {content.is_active ? 'Active' : 'Inactive'}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div className="flex space-x-2">
                                                 <button
-                                                    onClick={() => handleEdit(content)}
-                                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    onClick={() => handleEdit(client.name_content)}
+                                                    className="text-blue-600 hover:text-blue-800"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(content)}
-                                                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                    onClick={() => handleDelete(client.name_content)}
+                                                    className="text-red-600 hover:text-red-800"
                                                 >
                                                     Delete
                                                 </button>
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                                        </td>
+                                    </tr>
+                                )})}
+                                {clients.length === 0 && (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                                            No clients found. Click "Add New Client" to create one.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
-                            {/* Preview Section */}
-                            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                                <div className="bg-white p-8 rounded-lg">
-                                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-                                        {contents.find(c => c.key === 'title')?.value || 'Our Clients'}
-                                    </h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
-                                        {clientItems.map((client, index) => (
-                                            <div key={index} className="text-center">
-                                                <div className="h-16 mb-2 flex items-center justify-center">
-                                                    {client.metadata?.logo ? (
-                                                        <img 
-                                                            src={client.metadata.logo} 
-                                                            alt={client.value}
-                                                            className="h-full w-auto filter grayscale hover:grayscale-0 transition duration-300"
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                                e.target.nextElementSibling.style.display = 'block';
-                                                            }}
-                                                        />
-                                                    ) : null}
-                                                    <div className="h-16 w-20 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs">
-                                                        Logo
-                                                    </div>
-                                                </div>
-                                                <p className="text-sm text-gray-600">{client.value}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content Guide */}
-                            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
-                                <div className="text-sm text-blue-700 space-y-1">
-                                    <p><strong>Key examples:</strong> title, client_1, client_2, etc.</p>
-                                    <p><strong>Metadata format:</strong> {"{"}"logo": "/path/to/logo.png", "website": "https://client.com", "description": "Client description"{"}"}</p>
-                                    <p><strong>Tip:</strong> Use meaningful keys like client_1, client_2 for individual clients</p>
-                                </div>
-                            </div>
+                    {/* Content Guide */}
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
+                        <div className="text-sm text-blue-700 space-y-1">
+                            <p><strong>Key examples:</strong> title, client_1, client_2, etc.</p>
+                            <p><strong>Metadata format:</strong> {"{"}"logo": "/path/to/logo.png", "website": "https://client.com", "description": "Client description"{"}"}</p>
+                            <p><strong>Tip:</strong> Use meaningful keys like client_1, client_2 for individual clients</p>
                         </div>
                     </div>
                 </div>
@@ -162,6 +223,6 @@ export default function Client({ auth, contents }) {
                     onCancel={handleCloseForm}
                 />
             )}
-        </AuthenticatedLayout>
+        </SidebarLayout>
     );
 }

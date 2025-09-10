@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import SidebarLayout from '@/Layouts/SidebarLayout';
 import ContentForm from '@/Components/CMS/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
@@ -26,7 +26,7 @@ export default function About({ auth, contents }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <SidebarLayout>
             <Head title="About Section - CMS" />
 
             <div className="py-12">
@@ -156,6 +156,6 @@ export default function About({ auth, contents }) {
                     onCancel={handleCloseForm}
                 />
             )}
-        </AuthenticatedLayout>
+        </SidebarLayout>
     );
 }

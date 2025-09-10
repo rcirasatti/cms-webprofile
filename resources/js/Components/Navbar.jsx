@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-const Navbar = () => {
+const Navbar = ({ content = {} }) => {
   const [activeSection, setActiveSection] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Helper function to get content value by key
+  const getContentValue = (key, defaultValue = '') => {
+    const contentArray = content.navbar || []; // This should be the array from landing_page_contents
+    const item = contentArray.find(item => item.key === key);
+    return item ? item.value : defaultValue;
+  };
+
+  const logoText = getContentValue('logo_text', 'OmahIoT');
+  const logoImage = getContentValue('logo_image', '/assets/images/logo_omahiot.png');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,8 +80,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           <div className="h-10 hover:scale-105 transition-transform duration-300 cursor-pointer flex items-center">
             <img
-              src="/assets/images/logo_omahiot.png"
-              alt="OmahIoT"
+              src={logoImage}
+              alt={logoText}
               className="h-full w-auto object-contain"
             />
           </div>

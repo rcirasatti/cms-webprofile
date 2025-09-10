@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import SidebarLayout from '@/Layouts/SidebarLayout';
 import ContentForm from '@/Components/CMS/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
@@ -8,6 +8,16 @@ export default function Hero({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
     const [editingContent, setEditingContent] = useState(null);
     const { delete: deleteContent } = useForm();
+
+    // Extract hero content for preview
+    const title = contents.find(content => content.key === 'title')?.value || 'Welcome to OmahIoT';
+    const subtitle = contents.find(content => content.key === 'subtitle')?.value || 'Smart IoT Solutions for Modern Living';
+    const buttonText = contents.find(content => content.key === 'button_text')?.value || 'Explore Solutions';
+
+    const handleExploreClick = () => {
+        // Preview action - could scroll or show message
+        alert('This is a preview of how the hero section will appear on your landing page');
+    };
 
     const handleEdit = (content) => {
         setEditingContent(content);
@@ -26,7 +36,7 @@ export default function Hero({ auth, contents }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <SidebarLayout>
             <Head title="Hero Section - CMS" />
 
             <div className="py-12">
@@ -113,18 +123,76 @@ export default function Hero({ auth, contents }) {
                             )}
 
                             {/* Preview Section */}
-                            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg text-center">
-                                    <h1 className="text-4xl font-bold mb-4">
-                                        {contents.find(c => c.key === 'title')?.value || 'Hero Title'}
-                                    </h1>
-                                    <p className="text-xl mb-6">
-                                        {contents.find(c => c.key === 'subtitle')?.value || 'Hero Subtitle'}
-                                    </p>
-                                    <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold">
-                                        {contents.find(c => c.key === 'button_text')?.value || 'Call to Action'}
-                                    </button>
+                            <div className="mt-8 border-t pt-6">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-4">Live Preview</h2>
+                                <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ height: '400px' }}>
+                                    {/* Background Effects */}
+                                    <div className="absolute inset-0 overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#2C3A2F]/30 via-background/50 to-background"></div>
+                                        <div className="absolute w-full h-full opacity-30">
+                                            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#4A6741]/40 rounded-full mix-blend-multiply filter blur-[128px] animate-float-slow"></div>
+                                            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#2C3A2F]/40 rounded-full mix-blend-multiply filter blur-[128px] animate-float"></div>
+                                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-[128px] animate-float-delayed"></div>
+                                        </div>
+                                        <div className="absolute inset-0 bg-[url('/assets/images/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-30"></div>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="container mx-auto px-4 text-center relative z-10 h-full flex items-center justify-center">
+                                        <div className="space-y-8 animate-fade-in max-w-4xl">
+                                            <div className="relative inline-block">
+                                                <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white">
+                                                    {title.includes('OmahIoT') ? (
+                                                        <>
+                                                            {title.replace('OmahIoT', '').trim()}{" "}
+                                                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#4CAF50] to-white animate-gradient">
+                                                                OmahIoT
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#4CAF50] to-white animate-gradient">
+                                                            {title}
+                                                        </span>
+                                                    )}
+                                                </h1>
+                                            </div>
+
+                                            <p className="text-lg md:text-xl font-medium mb-8 max-w-3xl mx-auto text-white/80 animate-fade-in-delay-1 leading-relaxed">
+                                                {subtitle}
+                                            </p>
+
+                                            <div className="flex flex-col items-center space-y-8 animate-fade-in-delay-2">
+                                                <button
+                                                    onClick={handleExploreClick}
+                                                    className="group relative px-6 py-3 bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-primary rounded-xl font-medium text-white transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(74,103,65,0.3)] active:scale-95 overflow-hidden text-sm"
+                                                >
+                                                    <span className="absolute inset-0 bg-gradient-to-r from-[#4A6741]/20 via-primary/20 to-[#2C3A2F]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></span>
+                                                    <span className="relative flex items-center">
+                                                        {buttonText}
+                                                        <svg
+                                                            className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                                            />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+
+                                                                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Preview Label */}
+                                    <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                        PREVIEW
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -139,6 +207,6 @@ export default function Hero({ auth, contents }) {
                     onCancel={handleCloseForm}
                 />
             )}
-        </AuthenticatedLayout>
+        </SidebarLayout>
     );
 }

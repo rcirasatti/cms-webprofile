@@ -5,7 +5,19 @@ const ProjectsSection = ({
   activeFilter,
   setActiveFilter,
   filteredProjects,
+  content = {}
 }) => {
+  // Get projects from the new structured data
+  const projects = content.projects || [];
+
+  // Use default title since we're now using dedicated tables
+  const title = 'Our Projects';
+
+  // Filter projects based on activeFilter
+  const filtered = activeFilter === "all" 
+    ? projects 
+    : projects.filter(project => project.category === activeFilter);
+
   return (
     <section
       id="projects"
@@ -20,7 +32,7 @@ const ProjectsSection = ({
         <div className="max-w-3xl mx-auto text-center mb-10">
           <div className="relative inline-block mb-4">
             <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F] leading-tight">
-              Our Projects
+              {title}
             </h2>
             {/* Decorative underline */}
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#2C3A2F] to-[#4A6741] rounded-full"></div>
@@ -64,8 +76,9 @@ const ProjectsSection = ({
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 max-w-7xl mx-auto">
-          {filteredProjects.map((project, index) => (
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {filtered.map((project, index) => (
             <div
               key={index}
               className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden h-full transform hover:-translate-y-2"
@@ -76,7 +89,7 @@ const ProjectsSection = ({
               <div className="p-4">
                 <div className="relative mb-4 rounded-xl overflow-hidden bg-gradient-to-tr from-[#2C3A2F]/40 via-[#4A6741]/35 to-primary/30 shadow-md aspect-square">
                   <img
-                    src={project.image}
+                    src={project.image_path}
                     alt={project.title}
                     className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 p-3 filter brightness-110 contrast-110"
                   />

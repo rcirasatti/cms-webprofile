@@ -1,12 +1,32 @@
 import React from "react";
 
-const AboutSection = () => {
+const AboutSection = ({ content = {} }) => {
+    // Helper function to get content value by key
+    const getContentValue = (key, defaultValue = '') => {
+        const item = content.find(item => item.key === key);
+        return item ? item.value : defaultValue;
+    };
+
+    // Get dynamic content from CMS
+    const title = getContentValue('title', 'About Us');
+    const description = getContentValue('description', 'We are a pioneering technology company dedicated to bringing innovative IoT solutions to agricultural, aquacultural, and urban sectors, making technology accessible and impactful for everyone.');
+    const image = getContentValue('image', '/assets/images/omah-iot1.png');
+    const featuresTitle = getContentValue('features_title', 'Why Choose OmahIoT?');
+    const feature1Title = getContentValue('feature1_title', 'Innovative IoT Solutions');
+    const feature1Desc = getContentValue('feature1_description', 'We design and develop custom IoT solutions that address real-world challenges in agriculture, aquaculture, and urban environments.');
+    const feature2Title = getContentValue('feature2_title', 'Expert Technical Team');
+    const feature2Desc = getContentValue('feature2_description', 'Our team combines expertise in hardware design, software development, and data analytics to create comprehensive solutions.');
+    const feature3Title = getContentValue('feature3_title', 'Sustainable Development');
+    const feature3Desc = getContentValue('feature3_description', 'We prioritize sustainability in our designs, helping clients reduce environmental impact while improving operational efficiency.');
+    const experienceNumber = getContentValue('experience_number', '5+');
+    const experienceText = getContentValue('experience_text', 'Years Experience');
+
 return (
     <section
       id="about"
       className="py-24 bg-gradient-to-b from-background via-card to-background relative overflow-hidden"
     >
-      <div className="absolute inset-0">
+     <div className="absolute inset-0">
         <div className="absolute inset-0 opacity-[0.02] pattern-grid [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
       </div>
 
@@ -14,23 +34,21 @@ return (
         <div className="max-w-3xl mx-auto text-center mb-16">
           <div className="relative inline-block mb-4">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-2xl blur-lg opacity-50"></div>
-            <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F] leading-tight">
-              About Us
+            <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F]">
+              {title}
             </h2>
             {/* Decorative underline */}
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#2C3A2F] to-[#4A6741] rounded-full"></div>
           </div>
           <p className="text-lg leading-relaxed mt-6 text-foreground/80 max-w-2xl mx-auto">
-            We are a pioneering technology company dedicated to bringing
-            innovative IoT solutions to agricultural, aquacultural, and urban
-            sectors, making technology accessible and impactful for everyone.
+            {description}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-10 items-center max-w-4xl mx-auto">
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-primary text-center md:text-left">
-              Why Choose OmahIoT?
+              {featuresTitle}
             </h3>
             <div className="grid grid-cols-1 gap-4">
               <div className="group hover:bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 p-0.5 rounded-xl transition-all duration-300">
@@ -52,12 +70,10 @@ return (
                   </div>
                   <div>
                     <h4 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors">
-                      Innovative IoT Solutions
+                      {feature1Title}
                     </h4>
                     <p className="text-sm text-foreground/70 group-hover:text-foreground/90 transition-colors">
-                      We design and develop custom IoT solutions that address
-                      real-world challenges in agriculture, aquaculture, and
-                      urban environments.
+                      {feature1Desc}
                     </p>
                   </div>
                 </div>
@@ -81,12 +97,10 @@ return (
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm mb-1">
-                    Expert Technical Team
+                    {feature2Title}
                   </h4>
                   <p className="text-sm text-foreground/70">
-                    Our team combines expertise in hardware design, software
-                    development, and data analytics to create comprehensive
-                    solutions.
+                    {feature2Desc}
                   </p>
                 </div>
               </div>
@@ -109,29 +123,27 @@ return (
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm mb-1">
-                    Sustainable Development
+                    {feature3Title}
                   </h4>
                   <p className="text-sm text-foreground/70">
-                    We prioritize sustainability in our designs, helping
-                    clients reduce environmental impact while improving
-                    operational efficiency.
+                    {feature3Desc}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="relative mt-6 md:mt-0">
+         <div className="relative mt-6 md:mt-0">
             <div className="absolute inset-0 bg-primary/10 rounded-lg transform rotate-3 scale-105"></div>
             <div className="relative bg-card rounded-lg p-4 shadow-lg">
               <img
-                src="/assets/images/omah-iot1.png"
-                alt="About Us"
+                src={image}
+                alt={title}
                 className="w-full h-auto rounded-lg"
               />
               <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground p-3 rounded-lg shadow-lg">
-                <p className="font-bold text-lg">5+</p>
-                <p className="text-xs">Years Experience</p>
+                <p className="font-bold text-lg">{experienceNumber}</p>
+                <p className="text-xs">{experienceText}</p>
               </div>
             </div>
           </div>

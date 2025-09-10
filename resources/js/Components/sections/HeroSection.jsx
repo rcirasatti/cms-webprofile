@@ -1,6 +1,11 @@
 import React from "react";
 
-const HeroSection = ({ handleExploreClick }) => {
+const HeroSection = ({ handleExploreClick, content = {} }) => {
+    // Use default values since we're now using dedicated tables
+    const title = 'Welcome to OmahIoT';
+    const subtitle = 'Transforming Ideas into Solutions with IoT and Digital Innovation';
+    const buttonText = 'Explore Our Solutions';
+
 return (
     <section
     id="home"
@@ -20,21 +25,23 @@ return (
         <div className="space-y-8 animate-fade-in">
         <div className="relative inline-block">
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            Welcome to{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#4CAF50] to-white animate-gradient">
-                OmahIoT
-            </span>
+            {title.includes('OmahIoT') ? (
+                <>
+                {title.replace('OmahIoT', '').trim()}{" "}
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#4CAF50] to-white animate-gradient">
+                    OmahIoT
+                </span>
+                </>
+            ) : (
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#4CAF50] to-white animate-gradient">
+                {title}
+                </span>
+            )}
             </h1>
         </div>
 
         <p className="text-xl md:text-2xl font-medium mb-8 max-w-3xl mx-auto text-foreground/80 animate-fade-in-delay-1 leading-relaxed">
-            Transforming Ideas into Solutions with
-            <span className="text-primary font-semibold"> IoT </span>
-            and
-            <span className="text-secondary font-semibold">
-            {" "}
-            Digital Innovation
-            </span>
+            {subtitle}
         </p>
 
         <div className="flex flex-col items-center space-y-8 animate-fade-in-delay-2">
@@ -44,7 +51,7 @@ return (
             >
             <span className="absolute inset-0 bg-gradient-to-r from-[#4A6741]/20 via-primary/20 to-[#2C3A2F]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></span>
             <span className="relative flex items-center">
-                Explore Our Solutions
+                {buttonText}
                 <svg
                 className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform"
                 fill="none"

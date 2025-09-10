@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LandingPageContent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CmsController extends Controller
@@ -42,11 +43,39 @@ class CmsController extends Controller
         $validated = $request->validate([
             'section' => 'required|string|max:255',
             'key' => 'required|string|max:255',
-            'value' => 'required|string',
-            'metadata' => 'nullable|array',
+            'value' => 'nullable|string',
+            'metadata' => 'nullable|string', // Accept as string first
             'order' => 'nullable|integer',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'content_type' => 'nullable|string|in:text,image,url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        // Handle metadata conversion from JSON string to array
+        if (isset($validated['metadata'])) {
+            if (is_string($validated['metadata'])) {
+                try {
+                    $validated['metadata'] = json_decode($validated['metadata'], true);
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        $validated['metadata'] = [];
+                    }
+                } catch (\Exception $e) {
+                    $validated['metadata'] = [];
+                }
+            }
+        } else {
+            $validated['metadata'] = [];
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/uploads'), $imageName);
+            $validated['image_path'] = '/assets/images/uploads/' . $imageName;
+            $validated['content_type'] = 'image';
+            $validated['value'] = $validated['image_path']; // Set value to image path for compatibility
+        }
 
         $content = LandingPageContent::create($validated);
 
@@ -55,14 +84,53 @@ class CmsController extends Controller
 
     public function update(Request $request, LandingPageContent $content)
     {
+        Log::info('Update request received', [
+            'content_id' => $content->id,
+            'request_data' => $request->all(),
+            'has_file' => $request->hasFile('image')
+        ]);
+
         $validated = $request->validate([
             'section' => 'required|string|max:255',
             'key' => 'required|string|max:255',
-            'value' => 'required|string',
-            'metadata' => 'nullable|array',
+            'value' => 'nullable|string',
+            'metadata' => 'nullable|string', // Accept as string first
             'order' => 'nullable|integer',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'content_type' => 'nullable|string|in:text,image,url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        // Handle metadata conversion from JSON string to array
+        if (isset($validated['metadata'])) {
+            if (is_string($validated['metadata'])) {
+                try {
+                    $validated['metadata'] = json_decode($validated['metadata'], true);
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        $validated['metadata'] = [];
+                    }
+                } catch (\Exception $e) {
+                    $validated['metadata'] = [];
+                }
+            }
+        } else {
+            $validated['metadata'] = [];
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($content->image_path && file_exists(public_path($content->image_path))) {
+                unlink(public_path($content->image_path));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/uploads'), $imageName);
+            $validated['image_path'] = '/assets/images/uploads/' . $imageName;
+            $validated['content_type'] = 'image';
+            $validated['value'] = $validated['image_path']; // Set value to image path for compatibility
+        }
 
         $content->update($validated);
 
@@ -88,22 +156,10 @@ class CmsController extends Controller
         return Inertia::render('CMS/About', ['contents' => $contents]);
     }
 
-    public function project()
-    {
-        $contents = LandingPageContent::bySection('project')->ordered()->get();
-        return Inertia::render('CMS/Project', ['contents' => $contents]);
-    }
-
     public function portfolio()
     {
         $contents = LandingPageContent::bySection('portfolio')->ordered()->get();
-        return Inertia::render('CMS/Portfolio', ['contents' => $contents]);
-    }
-
-    public function client()
-    {
-        $contents = LandingPageContent::bySection('client')->ordered()->get();
-        return Inertia::render('CMS/Client', ['contents' => $contents]);
+        return Inertia::render('CMS/PortfolioTable', ['contents' => $contents]);
     }
 
     public function contact()
@@ -122,5 +178,11 @@ class CmsController extends Controller
     {
         $contents = LandingPageContent::bySection('footer')->ordered()->get();
         return Inertia::render('CMS/Footer', ['contents' => $contents]);
+    }
+
+    public function activities()
+    {
+        $activities = \App\Services\ActivityService::getRecentActivities(50); // Get more activities for the full list
+        return Inertia::render('CMS/Activities', ['activities' => $activities]);
     }
 }

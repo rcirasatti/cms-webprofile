@@ -12,7 +12,9 @@ class LandingPageContent extends Model
         'value',
         'metadata',
         'order',
-        'is_active'
+        'is_active',
+        'image_path',
+        'content_type'
     ];
 
     protected $casts = [
