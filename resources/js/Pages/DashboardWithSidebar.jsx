@@ -47,10 +47,13 @@ export default function DashboardWithSidebar({ stats = {} }) {
         },
     ];
 
-    const recentActivities = actualStats.recentActivities.length > 0 ? actualStats.recentActivities.slice(-3) : [
-        { action: 'Welcome to CMS Dashboard', time: 'Just now', icon: '🎉' },
-        { action: 'System initialized successfully', time: 'Today', icon: '⚙️' },
-    ];
+    // Show 3 most recent activities (not last 3)
+    const recentActivities = actualStats.recentActivities.length > 0
+        ? actualStats.recentActivities.slice(0, 3)
+        : [
+            { action: 'Welcome to CMS Dashboard', time: 'Just now', icon: '🎉' },
+            { action: 'System initialized successfully', time: 'Today', icon: '⚙️' },
+        ];
 
     const sections = [
         {

@@ -22,7 +22,7 @@ class ActivityService
                 'action' => self::formatActivityDescription($activity),
                 'time' => self::getRelativeTime($activity->created_at),
                 'icon' => self::getActivityIcon($activity->action),
-                'created_at' => $activity->created_at,
+                'created_at' => $activity->created_at->toISOString(),
             ];
         });
     }
@@ -47,20 +47,21 @@ class ActivityService
     private static function formatActivityDescription($activity)
     {
         $modelName = self::getModelDisplayName($activity->model_type);
+        $modelTitle = self::getModelTitle($activity);
 
         switch ($activity->action) {
             case 'created':
-                return "Added new {$modelName}: " . self::getModelTitle($activity);
+                return "Added new {$modelName}: {$modelTitle}";
             case 'updated':
-                return "Updated {$modelName}: " . self::getModelTitle($activity);
+                return "Updated {$modelName}: {$modelTitle}";
             case 'deleted':
-                return "Deleted {$modelName}: " . self::getModelTitle($activity);
+                return "Deleted {$modelName}: {$modelTitle}";
             case 'restored':
-                return "Restored {$modelName}: " . self::getModelTitle($activity);
+                return "Restored {$modelName}: {$modelTitle}";
             case 'force_deleted':
-                return "Permanently deleted {$modelName}: " . self::getModelTitle($activity);
+                return "Permanently deleted {$modelName}: {$modelTitle}";
             default:
-                return $activity->description;
+                return $activity->description ?? "Modified {$modelName}: {$modelTitle}";
         }
     }
 
@@ -73,7 +74,10 @@ class ActivityService
             'App\Models\Portfolio' => 'portfolio',
             'App\Models\Project' => 'project',
             'App\Models\Client' => 'client',
-            default => 'item',
+            'App\Models\LandingPageContent' => 'content',
+            'App\Models\User' => 'user',
+            'App\Models\Activity' => 'activity',
+            default => 'content', // Changed from 'item' to 'content'
         };
     }
 
@@ -89,15 +93,50 @@ class ActivityService
                     'App\Models\Portfolio' => $model->title,
                     'App\Models\Project' => $model->title,
                     'App\Models\Client' => $model->name,
-                    default => 'Unknown',
+                    'App\Models\LandingPageContent' => $model->key ?? 'Content',
+                    'App\Models\User' => $model->name ?? $model->email,
+                    'App\Models\Activity' => 'Activity Log',
+                    default => 'Content Item',
                 };
             }
         } catch (\Exception $e) {
-            // Model might have been deleted, try to get from description
+            // Model might have been deleted, try to get from description or old_values
+            if ($activity->old_values) {
+                return match ($activity->model_type) {
+                    'App\Models\Portfolio' => $activity->old_values['title'] ?? 'Portfolio Item',
+                    'App\Models\Project' => $activity->old_values['title'] ?? 'Project Item',
+                    'App\Models\Client' => $activity->old_values['name'] ?? 'Client Item',
+                    'App\Models\LandingPageContent' => $activity->old_values['key'] ?? 'Content Item',
+                    'App\Models\User' => $activity->old_values['name'] ?? $activity->old_values['email'] ?? 'User',
+                    default => 'Content Item',
+                };
+            }
+
+            // Try to extract from description if available
+            if ($activity->description && str_contains($activity->description, ':')) {
+                $parts = explode(':', $activity->description, 2);
+                if (count($parts) > 1) {
+                    return trim($parts[1]);
+                }
+            }
         }
 
         // Fallback to description or generic name
-        return 'Item';
+        if ($activity->description && str_contains($activity->description, ':')) {
+            $parts = explode(':', $activity->description, 2);
+            if (count($parts) > 1) {
+                return trim($parts[1]);
+            }
+        }
+
+        return match ($activity->model_type) {
+            'App\Models\Portfolio' => 'Portfolio Item',
+            'App\Models\Project' => 'Project Item',
+            'App\Models\Client' => 'Client Item',
+            'App\Models\LandingPageContent' => 'Content Item',
+            'App\Models\User' => 'User',
+            default => 'Content Item',
+        };
     }
 
     /**
