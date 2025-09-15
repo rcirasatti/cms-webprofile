@@ -205,6 +205,111 @@ class CmsController extends Controller
         return Inertia::render('CMS/About', ['contents' => $contents]);
     }
 
+    public function updateAbout(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'features_title' => 'nullable|string|max:255',
+            'feature1_title' => 'nullable|string|max:255',
+            'feature1_description' => 'nullable|string',
+            'feature2_title' => 'nullable|string|max:255',
+            'feature2_description' => 'nullable|string',
+            'feature3_title' => 'nullable|string|max:255',
+            'feature3_description' => 'nullable|string',
+            'experience_number' => 'nullable|string|max:255',
+            'experience_text' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Handle image upload if provided
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+
+            // Create uploads directory if it doesn't exist
+            $uploadPath = public_path('assets/images/uploads');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $image->move($uploadPath, $imageName);
+            $imagePath = '/assets/images/uploads/' . $imageName;
+        }
+
+        // Update or create each content item
+        $contentUpdates = [
+            'title' => $validated['title'] ?? '',
+            'description' => $validated['description'] ?? '',
+            'features_title' => $validated['features_title'] ?? '',
+            'feature1_title' => $validated['feature1_title'] ?? '',
+            'feature1_description' => $validated['feature1_description'] ?? '',
+            'feature2_title' => $validated['feature2_title'] ?? '',
+            'feature2_description' => $validated['feature2_description'] ?? '',
+            'feature3_title' => $validated['feature3_title'] ?? '',
+            'feature3_description' => $validated['feature3_description'] ?? '',
+            'experience_number' => $validated['experience_number'] ?? '',
+            'experience_text' => $validated['experience_text'] ?? '',
+        ];
+
+        foreach ($contentUpdates as $key => $value) {
+            $content = LandingPageContent::where('section', 'about')
+                ->where('key', $key)
+                ->first();
+
+            if ($content) {
+                $content->update([
+                    'value' => $value,
+                    'is_active' => true,
+                ]);
+            } else {
+                LandingPageContent::create([
+                    'section' => 'about',
+                    'key' => $key,
+                    'value' => $value,
+                    'metadata' => [],
+                    'order' => 0,
+                    'is_active' => true,
+                    'content_type' => 'text',
+                ]);
+            }
+        }
+
+        // Handle image separately
+        if ($imagePath) {
+            $imageContent = LandingPageContent::where('section', 'about')
+                ->where('key', 'image')
+                ->first();
+
+            if ($imageContent) {
+                // Delete old image if exists
+                if ($imageContent->value && file_exists(public_path($imageContent->value))) {
+                    unlink(public_path($imageContent->value));
+                }
+
+                $imageContent->update([
+                    'value' => $imagePath,
+                    'is_active' => true,
+                    'content_type' => 'image',
+                    'metadata' => ['alt' => 'About Us Image'],
+                ]);
+            } else {
+                LandingPageContent::create([
+                    'section' => 'about',
+                    'key' => 'image',
+                    'value' => $imagePath,
+                    'metadata' => ['alt' => 'About Us Image'],
+                    'order' => 0,
+                    'is_active' => true,
+                    'content_type' => 'image',
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'About content updated successfully!');
+    }
+
     public function portfolio()
     {
         $contents = LandingPageContent::bySection('portfolio')->ordered()->get();

@@ -1,28 +1,14 @@
 import React, { useState } from "react";
 import SidebarLayout from "@/Layouts/SidebarLayout";
-import ContentForm from "@/Components/CMS/ContentForm";
-import { Head, Link } from "@inertiajs/react";
-import { useForm } from "@inertiajs/react";
+import AboutForm from "@/Components/CMS/AboutForm";
+import { Head } from "@inertiajs/react";
 
 export default function About({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
-    const [editingContent, setEditingContent] = useState(null);
-    const { delete: deleteContent } = useForm();
-
-    const handleEdit = (content) => {
-        setEditingContent(content);
-        setShowForm(true);
-    };
-
-    const handleDelete = (content) => {
-        if (confirm("Are you sure you want to delete this content?")) {
-            deleteContent(route("cms.content.destroy", content.id));
-        }
-    };
+    const [activeTab, setActiveTab] = useState('main');
 
     const handleCloseForm = () => {
         setShowForm(false);
-        setEditingContent(null);
     };
 
     return (
@@ -43,17 +29,11 @@ export default function About({ auth, contents }) {
                                     </p>
                                 </div>
                                 <div className="flex space-x-3">
-                                    <Link
-                                        href={route("cms.sections")}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                    >
-                                        ← Back to Sections
-                                    </Link>
                                     <button
                                         onClick={() => setShowForm(true)}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        Add New Content
+                                        Edit About Content
                                     </button>
                                 </div>
                             </div>
@@ -67,86 +47,168 @@ export default function About({ auth, contents }) {
                                         No about content yet
                                     </h3>
                                     <p className="text-gray-600 mb-3">
-                                        Get started by adding your first about
-                                        content item.
+                                        Get started by editing your about content.
                                     </p>
                                     <button
                                         onClick={() => setShowForm(true)}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        Add About Content
+                                        Edit About Content
                                     </button>
                                 </div>
                             ) : (
-                                <div className="space-y-3">
-                                    {contents.map((content) => (
-                                        <div
-                                            key={content.id}
-                                            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                                        >
-                                            <div className="flex justify-between items-start">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-2">
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-1">
-                                                            {content.key}
-                                                        </span>
-                                                        <span className="text-sm text-gray-500 mb-1">
-                                                            Order:{" "}
-                                                            {content.order}
-                                                        </span>
-                                                        <span
-                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-1 ${
-                                                                content.is_active
-                                                                    ? "bg-green-100 text-green-800"
-                                                                    : "bg-red-100 text-red-800"
-                                                            }`}
-                                                        >
-                                                            mb-1
-                                                            {content.is_active
-                                                                ? "Active"
-                                                                : "Inactive"}
-                                                        </span>
+                                <div className="space-y-4">
+                                    {/* Tab Navigation */}
+                                    <div className="border-b border-gray-200">
+                                        <nav className="-mb-px flex space-x-8">
+                                            <button
+                                                onClick={() => setActiveTab('main')}
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                    activeTab === 'main'
+                                                        ? 'border-blue-500 text-blue-600'
+                                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                📝 Main Content
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveTab('features')}
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                    activeTab === 'features'
+                                                        ? 'border-blue-500 text-blue-600'
+                                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                ✨ Features
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveTab('media')}
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                    activeTab === 'media'
+                                                        ? 'border-blue-500 text-blue-600'
+                                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                🖼️ Media & Experience
+                                            </button>
+                                        </nav>
+                                    </div>
+
+                                    {/* Tab Content */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        {activeTab === 'main' && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">📝 Main Content</h3>
+                                                <div className="grid md:grid-cols-1 gap-4">
+                                                    <div>
+                                                        <span className="text-sm font-medium text-gray-600">Title:</span>
+                                                        <p className="text-gray-900 mt-1 font-medium">
+                                                            {contents.find(c => c.key === 'title')?.value || 'Not set'}
+                                                        </p>
                                                     </div>
-                                                    <p className="text-gray-900 mb-1">
-                                                        {content.value}
-                                                    </p>
-                                                    {content.metadata &&
-                                                        Object.keys(
-                                                            content.metadata
-                                                        ).length > 0 && (
-                                                            <div className="text-sm text-gray-600 mb-1">
-                                                                <strong>
-                                                                    Metadata:
-                                                                </strong>{" "}
-                                                                {JSON.stringify(
-                                                                    content.metadata
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                </div>
-                                                <div className="flex space-x-2 ml-3 mb-1">
-                                                    <button
-                                                        onClick={() =>
-                                                            handleEdit(content)
-                                                        }
-                                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                content
-                                                            )
-                                                        }
-                                                        className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                    <div>
+                                                        <span className="text-sm font-medium text-gray-600">Description:</span>
+                                                        <p className="text-gray-900 mt-1 text-sm leading-relaxed">
+                                                            {contents.find(c => c.key === 'description')?.value || 'Not set'}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )}
+
+                                        {activeTab === 'features' && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">✨ Features Content</h3>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <span className="text-sm font-medium text-gray-600">Features Title:</span>
+                                                        <p className="text-gray-900 mt-1">
+                                                            {contents.find(c => c.key === 'features_title')?.value || 'Not set'}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <div className="grid md:grid-cols-3 gap-4">
+                                                        <div className="bg-white p-3 rounded border">
+                                                            <span className="text-sm font-medium text-gray-600">Feature 1:</span>
+                                                            <p className="text-gray-900 mt-1 text-sm">
+                                                                <strong>{contents.find(c => c.key === 'feature1_title')?.value || 'Not set'}</strong>
+                                                                {contents.find(c => c.key === 'feature1_description')?.value && (
+                                                                    <span className="block text-gray-600 mt-1">
+                                                                        {contents.find(c => c.key === 'feature1_description').value}
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <div className="bg-white p-3 rounded border">
+                                                            <span className="text-sm font-medium text-gray-600">Feature 2:</span>
+                                                            <p className="text-gray-900 mt-1 text-sm">
+                                                                <strong>{contents.find(c => c.key === 'feature2_title')?.value || 'Not set'}</strong>
+                                                                {contents.find(c => c.key === 'feature2_description')?.value && (
+                                                                    <span className="block text-gray-600 mt-1">
+                                                                        {contents.find(c => c.key === 'feature2_description').value}
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <div className="bg-white p-3 rounded border">
+                                                            <span className="text-sm font-medium text-gray-600">Feature 3:</span>
+                                                            <p className="text-gray-900 mt-1 text-sm">
+                                                                <strong>{contents.find(c => c.key === 'feature3_title')?.value || 'Not set'}</strong>
+                                                                {contents.find(c => c.key === 'feature3_description')?.value && (
+                                                                    <span className="block text-gray-600 mt-1">
+                                                                        {contents.find(c => c.key === 'feature3_description').value}
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'media' && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-3">🖼️ Media & Experience</h3>
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <span className="text-sm font-medium text-gray-600">About Image:</span>
+                                                        <div className="mt-2">
+                                                            {contents.find(c => c.key === 'image')?.value ? (
+                                                                <div className="flex items-center space-x-3">
+                                                                    <img
+                                                                        src={contents.find(c => c.key === 'image').value}
+                                                                        alt="Current About"
+                                                                        className="h-16 w-16 object-cover rounded border"
+                                                                    />
+                                                                    <div>
+                                                                        <p className="text-sm text-gray-600">Image uploaded</p>
+                                                                        <p className="text-xs text-gray-500">
+                                                                            {contents.find(c => c.key === 'image').value.split('/').pop()}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-sm text-gray-500">No image uploaded</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-sm font-medium text-gray-600">Experience Badge:</span>
+                                                        <div className="mt-2 bg-white p-3 rounded border inline-block">
+                                                            <p className="text-lg font-bold text-blue-600">
+                                                                {contents.find(c => c.key === 'experience_number')?.value || 'Not set'}
+                                                            </p>
+                                                            <p className="text-xs text-gray-600">
+                                                                {contents.find(c => c.key === 'experience_text')?.value || 'Not set'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
@@ -155,7 +217,7 @@ export default function About({ auth, contents }) {
                                 <h2 className="text-lg font-semibold text-gray-800 mb-3">
                                     Live Preview
                                 </h2>
-                                <div className="py-8 bg-gradient-to-b from-background via-card to-background relative overflow-hidden rounded-lg">
+                                <div className="py-8 bg-gradient-to-b from-background via-card to-background relative overflow-hidden rounded-lg h-[400px] overflow-y-auto">
                                     {/* Background Pattern */}
                                     <div className="absolute inset-0">
                                         <div className="absolute inset-0 opacity-[0.02] pattern-grid [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
@@ -372,9 +434,8 @@ export default function About({ auth, contents }) {
             </div>
 
             {showForm && (
-                <ContentForm
-                    content={editingContent}
-                    section="about"
+                <AboutForm
+                    contents={contents}
                     onCancel={handleCloseForm}
                 />
             )}

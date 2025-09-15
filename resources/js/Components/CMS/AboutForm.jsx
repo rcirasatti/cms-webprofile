@@ -5,7 +5,7 @@ export default function AboutForm({ contents, onCancel }) {
     const { data, setData, post, patch, processing, errors, reset } = useForm({
         title: contents.find(c => c.key === 'title')?.value || '',
         description: contents.find(c => c.key === 'description')?.value || '',
-        image: contents.find(c => c.key === 'image')?.value || '',
+        image: null, // Changed to null for file upload
         features_title: contents.find(c => c.key === 'features_title')?.value || '',
         feature1_title: contents.find(c => c.key === 'feature1_title')?.value || '',
         feature1_description: contents.find(c => c.key === 'feature1_description')?.value || '',
@@ -17,26 +17,48 @@ export default function AboutForm({ contents, onCancel }) {
         experience_text: contents.find(c => c.key === 'experience_text')?.value || '',
     });
 
+    // Get current values for display
+    const currentValues = {
+        title: contents.find(c => c.key === 'title')?.value || '',
+        description: contents.find(c => c.key === 'description')?.value || '',
+        image: contents.find(c => c.key === 'image')?.value || '',
+        features_title: contents.find(c => c.key === 'features_title')?.value || '',
+        feature1_title: contents.find(c => c.key === 'feature1_title')?.value || '',
+        feature1_description: contents.find(c => c.key === 'feature1_description')?.value || '',
+        feature2_title: contents.find(c => c.key === 'feature2_title')?.value || '',
+        feature2_description: contents.find(c => c.key === 'feature2_description')?.value || '',
+        feature3_title: contents.find(c => c.key === 'feature3_title')?.value || '',
+        feature3_description: contents.find(c => c.key === 'feature3_description')?.value || '',
+        experience_number: contents.find(c => c.key === 'experience_number')?.value || '',
+        experience_text: contents.find(c => c.key === 'experience_text')?.value || '',
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Prepare data to send
-        const formData = {
-            title: data.title,
-            description: data.description,
-            image: data.image,
-            features_title: data.features_title,
-            feature1_title: data.feature1_title,
-            feature1_description: data.feature1_description,
-            feature2_title: data.feature2_title,
-            feature2_description: data.feature2_description,
-            feature3_title: data.feature3_title,
-            feature3_description: data.feature3_description,
-            experience_number: data.experience_number,
-            experience_text: data.experience_text,
-        };
+        // Prepare FormData for file upload
+        const formData = new FormData();
+
+        // Add text data
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('features_title', data.features_title);
+        formData.append('feature1_title', data.feature1_title);
+        formData.append('feature1_description', data.feature1_description);
+        formData.append('feature2_title', data.feature2_title);
+        formData.append('feature2_description', data.feature2_description);
+        formData.append('feature3_title', data.feature3_title);
+        formData.append('feature3_description', data.feature3_description);
+        formData.append('experience_number', data.experience_number);
+        formData.append('experience_text', data.experience_text);
+
+        // Add image file if selected
+        if (data.image) {
+            formData.append('image', data.image);
+        }
 
         router.post(route('cms.about.update'), formData, {
+            forceFormData: true,
             onSuccess: () => {
                 alert('About content updated successfully!');
                 onCancel();
@@ -152,9 +174,14 @@ export default function AboutForm({ contents, onCancel }) {
                                             type="text"
                                             value={data.feature2_title}
                                             onChange={(e) => setData('feature2_title', e.target.value)}
-                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-2 py-1"
                                             placeholder="Feature title"
                                         />
+                                        {currentValues.feature2_title && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Current: <span className="font-medium">{currentValues.feature2_title}</span>
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -162,9 +189,14 @@ export default function AboutForm({ contents, onCancel }) {
                                             value={data.feature2_description}
                                             onChange={(e) => setData('feature2_description', e.target.value)}
                                             rows={2}
-                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-2 py-1"
                                             placeholder="Feature description"
                                         />
+                                        {currentValues.feature2_description && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Current: <span className="font-medium">{currentValues.feature2_description.substring(0, 80)}...</span>
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -179,9 +211,14 @@ export default function AboutForm({ contents, onCancel }) {
                                             type="text"
                                             value={data.feature3_title}
                                             onChange={(e) => setData('feature3_title', e.target.value)}
-                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-2 py-1"
                                             placeholder="Feature title"
                                         />
+                                        {currentValues.feature3_title && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Current: <span className="font-medium">{currentValues.feature3_title}</span>
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -189,9 +226,14 @@ export default function AboutForm({ contents, onCancel }) {
                                             value={data.feature3_description}
                                             onChange={(e) => setData('feature3_description', e.target.value)}
                                             rows={2}
-                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-2 py-1"
                                             placeholder="Feature description"
                                         />
+                                        {currentValues.feature3_description && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Current: <span className="font-medium">{currentValues.feature3_description.substring(0, 80)}...</span>
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -207,9 +249,14 @@ export default function AboutForm({ contents, onCancel }) {
                                         type="text"
                                         value={data.experience_number}
                                         onChange={(e) => setData('experience_number', e.target.value)}
-                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
                                         placeholder="5+"
                                     />
+                                    {currentValues.experience_number && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Current: <span className="font-medium">{currentValues.experience_number}</span>
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
@@ -217,9 +264,14 @@ export default function AboutForm({ contents, onCancel }) {
                                         type="text"
                                         value={data.experience_text}
                                         onChange={(e) => setData('experience_text', e.target.value)}
-                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
                                         placeholder="Years Experience"
                                     />
+                                    {currentValues.experience_text && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Current: <span className="font-medium">{currentValues.experience_text}</span>
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
