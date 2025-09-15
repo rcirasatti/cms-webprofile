@@ -37,21 +37,7 @@ export default function Navbar({ auth, contents }) {
                                     <h1 className="text-2xl font-bold text-gray-800">Navbar Section</h1>
                                     <p className="text-gray-600">Manage navigation bar and logo</p>
                                 </div>
-                                <div className="flex space-x-3">
-                                    <Link
-                                        href={route('cms.sections')}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                    >
-                                        ← Back to Sections
-                                    </Link>
-                                    <button
-                                        onClick={() => setShowForm(true)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        Add Navbar Element
-                                    </button>
-                                </div>
-                            </div>
+                                                    </div>
 
                             <div className="space-y-4">
                                 {contents.map((content) => (

@@ -32,39 +32,25 @@ export default function Footer({ auth, contents }) {
             <Head title="Footer Section - CMS" />
 
             <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div className="p-6">
+                <div className="p-6 overflow-hidden">
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-800">Footer Section</h1>
                             <p className="text-gray-600">Manage footer content and social media links</p>
                         </div>
-                        <div className="flex space-x-3">
-                            <Link
-                                href={route('cms.sections')}
-                                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                                ← Back to Sections
-                            </Link>
-                            <button
-                                onClick={() => setShowForm(true)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                Add Footer Content
-                            </button>
-                        </div>
-                    </div>
+                                           </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {contents.map((content) => (
-                            <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1">
+                            <div key={content.id} className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow overflow-hidden">
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="flex-1 min-w-0">
                                         <div className="flex items-center space-x-2 mb-2">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 truncate max-w-[150px]">
                                                 {content.key}
                                             </span>
-                                            <span className="text-sm text-gray-500">Order: {content.order}</span>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            <span className="text-xs text-gray-500">Order: {content.order}</span>
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                                                 content.is_active 
                                                     ? 'bg-green-100 text-green-800' 
                                                     : 'bg-red-100 text-red-800'
@@ -72,30 +58,31 @@ export default function Footer({ auth, contents }) {
                                                 {content.is_active ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
-                                        <p className="text-gray-900 mb-2 font-medium">{content.value}</p>
+                                        <p className="text-gray-900 mb-2 font-medium text-sm break-words break-all">{content.value}</p>
                                         {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                            <div className="text-sm text-gray-600 space-y-1">
-                                                {content.metadata.platform && (
-                                                    <p><strong>Platform:</strong> {content.metadata.platform}</p>
-                                                )}
-                                                {content.metadata.icon && (
-                                                    <p><strong>Icon:</strong> {content.metadata.icon}</p>
-                                                )}
+                                            <div className="text-xs text-gray-600 truncate">
+                                                <strong>Platform:</strong> {content.metadata.platform}
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex space-x-2 ml-4">
+                                    <div className="flex space-x-1 flex-shrink-0">
                                         <button
                                             onClick={() => handleEdit(content)}
-                                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                            className="text-blue-600 hover:text-blue-800 p-1"
+                                            title="Edit"
                                         >
-                                            Edit
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
                                         </button>
                                         <button
                                             onClick={() => handleDelete(content)}
-                                            className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                            className="text-red-600 hover:text-red-800 p-1"
+                                            title="Delete"
                                         >
-                                            Delete
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
                                         </button>
                                     </div>
                                 </div>
@@ -104,21 +91,22 @@ export default function Footer({ auth, contents }) {
                     </div>
 
                     {/* Preview Section */}
-                    <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                        <div className="bg-gray-900 text-white p-8 rounded-lg">
-                            <div className="flex flex-col md:flex-row justify-between items-center">
-                                <p className="text-gray-400">
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                        <h3 className="text-lg font-medium text-gray-900 mb-3">Preview</h3>
+                        <div className="bg-gray-900 text-white p-4 rounded-lg overflow-hidden">
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <p className="text-gray-400 text-sm truncate flex-1">
                                     {contents.find(c => c.key === 'copyright')?.value || '© 2025 Your Company. All rights reserved.'}
                                 </p>
-                                <div className="flex space-x-4 mt-4 md:mt-0">
-                                    {socialItems.map((social, index) => (
-                                        <a 
+                                <div className="flex space-x-3 flex-shrink-0">
+                                    {socialItems.slice(0, 4).map((social, index) => (
+                                        <a
                                             key={index}
-                                            href={social.value} 
-                                            className="text-gray-400 hover:text-white transition duration-300"
+                                            href={social.value}
+                                            className="text-gray-400 hover:text-white transition duration-300 text-lg"
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            title={social.metadata?.platform || 'Social Link'}
                                         >
                                             {social.metadata?.platform === 'facebook' && '📘'}
                                             {social.metadata?.platform === 'instagram' && '📷'}
@@ -134,12 +122,12 @@ export default function Footer({ auth, contents }) {
                     </div>
 
                     {/* Content Guide */}
-                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
-                        <div className="text-sm text-blue-700 space-y-1">
-                            <p><strong>Common keys:</strong> copyright, social_facebook, social_instagram, social_twitter</p>
-                            <p><strong>Social metadata:</strong> {"{"}"platform": "facebook", "icon": "fab fa-facebook"{"}"}</p>
-                            <p><strong>Tip:</strong> Use social_* pattern for social media links</p>
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="text-sm font-medium text-blue-800 mb-2">Content Guide</h4>
+                        <div className="text-xs text-blue-700 space-y-1">
+                            <p><strong>Keys:</strong> copyright, social_facebook, social_instagram, etc.</p>
+                            <p><strong>Metadata:</strong> {"{"}"platform": "facebook"{"}"}</p>
+                            <p><strong>Tip:</strong> Use social_* pattern for links</p>
                         </div>
                     </div>
                 </div>
