@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import PortfolioForm from '@/Components/CMS/PortfolioForm';
+import PortfolioForm from './form';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function PortfolioTable({ auth, portfolios }) {

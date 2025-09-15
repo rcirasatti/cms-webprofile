@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ContentForm from '@/Components/CMS/ContentForm';
+import ContentForm from '@/Components/ui/ContentForm';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 
-export default function Portfolio({ auth, contents }) {
+export default function Navbar({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
     const [editingContent, setEditingContent] = useState(null);
     const { delete: deleteContent } = useForm();
@@ -25,20 +25,17 @@ export default function Portfolio({ auth, contents }) {
         setEditingContent(null);
     };
 
-    const portfolioItems = contents.filter(content => content.key.startsWith('portfolio_'));
-
     return (
-        <SidebarLayout>
-            <Head title="Portfolio Section - CMS" />
+        <SidebarLayout user={auth.user}>
+            <Head title="Navbar Section - CMS" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+            <div className="p-6">
+                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="p-6 text-gray-900">
                             <div className="flex justify-between items-center mb-6">
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-800">Portfolio Section</h1>
-                                    <p className="text-gray-600">Showcase your portfolio and work samples</p>
+                                    <h1 className="text-2xl font-bold text-gray-800">Navbar Section</h1>
+                                    <p className="text-gray-600">Manage navigation bar and logo</p>
                                 </div>
                                 <div className="flex space-x-3">
                                     <Link
@@ -51,7 +48,7 @@ export default function Portfolio({ auth, contents }) {
                                         onClick={() => setShowForm(true)}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        Add Portfolio Item
+                                        Add Navbar Element
                                     </button>
                                 </div>
                             </div>
@@ -62,7 +59,7 @@ export default function Portfolio({ auth, contents }) {
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1">
                                                 <div className="flex items-center space-x-2 mb-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
                                                         {content.key}
                                                     </span>
                                                     <span className="text-sm text-gray-500">Order: {content.order}</span>
@@ -76,16 +73,8 @@ export default function Portfolio({ auth, contents }) {
                                                 </div>
                                                 <p className="text-gray-900 mb-2 font-medium">{content.value}</p>
                                                 {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                                    <div className="text-sm text-gray-600 space-y-1">
-                                                        {content.metadata.category && (
-                                                            <p><strong>Category:</strong> {content.metadata.category}</p>
-                                                        )}
-                                                        {content.metadata.image && (
-                                                            <p><strong>Image:</strong> {content.metadata.image}</p>
-                                                        )}
-                                                        {content.metadata.link && (
-                                                            <p><strong>Link:</strong> {content.metadata.link}</p>
-                                                        )}
+                                                    <div className="text-sm text-gray-600">
+                                                        <strong>Metadata:</strong> {JSON.stringify(content.metadata)}
                                                     </div>
                                                 )}
                                             </div>
@@ -111,36 +100,35 @@ export default function Portfolio({ auth, contents }) {
                             {/* Preview Section */}
                             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
                                 <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                                <div className="bg-white p-8 rounded-lg">
-                                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-                                        {contents.find(c => c.key === 'title')?.value || 'Our Portfolio'}
-                                    </h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {portfolioItems.map((portfolio, index) => (
-                                            <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg bg-gray-200 aspect-video">
-                                                {portfolio.metadata?.image ? (
+                                <div className="bg-white shadow-lg rounded-lg p-4">
+                                    <nav className="flex justify-between items-center">
+                                        <div className="flex items-center">
+                                            <div className="w-8 h-8 bg-gray-200 rounded mr-3 flex items-center justify-center">
+                                                {contents.find(c => c.key === 'logo_image')?.value ? (
                                                     <img 
-                                                        src={portfolio.metadata.image} 
-                                                        alt={portfolio.value}
-                                                        className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                                                        src={contents.find(c => c.key === 'logo_image').value} 
+                                                        alt="Logo"
+                                                        className="w-full h-full object-cover rounded"
                                                         onError={(e) => {
                                                             e.target.style.display = 'none';
-                                                            e.target.nextElementSibling.style.display = 'flex';
+                                                            e.target.nextElementSibling.style.display = 'block';
                                                         }}
                                                     />
                                                 ) : null}
-                                                <div className="absolute inset-0 bg-gray-300 flex items-center justify-center text-gray-500">
-                                                    Portfolio Image
-                                                </div>
-                                                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                                                    <div className="text-center text-white">
-                                                        <h3 className="text-lg font-semibold mb-2">{portfolio.value}</h3>
-                                                        <p className="text-sm">{portfolio.metadata?.category || 'Category'}</p>
-                                                    </div>
-                                                </div>
+                                                <span className="text-xs text-gray-500">Logo</span>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <span className="text-xl font-bold text-gray-800">
+                                                {contents.find(c => c.key === 'logo_text')?.value || 'Your Company'}
+                                            </span>
+                                        </div>
+                                        <div className="hidden md:flex space-x-8">
+                                            <a href="#" className="text-gray-600 hover:text-blue-600">Home</a>
+                                            <a href="#" className="text-gray-600 hover:text-blue-600">About</a>
+                                            <a href="#" className="text-gray-600 hover:text-blue-600">Projects</a>
+                                            <a href="#" className="text-gray-600 hover:text-blue-600">Portfolio</a>
+                                            <a href="#" className="text-gray-600 hover:text-blue-600">Contact</a>
+                                        </div>
+                                    </nav>
                                 </div>
                             </div>
 
@@ -148,20 +136,19 @@ export default function Portfolio({ auth, contents }) {
                             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
                                 <div className="text-sm text-blue-700 space-y-1">
-                                    <p><strong>Key examples:</strong> title, portfolio_1, portfolio_2, etc.</p>
-                                    <p><strong>Metadata format:</strong> {"{"}"category": "Web Design", "image": "/path/to/image.jpg", "link": "#"{"}"}</p>
-                                    <p><strong>Tip:</strong> Use meaningful keys like portfolio_1, portfolio_2 for individual items</p>
+                                    <p><strong>Common keys:</strong> logo_text, logo_image, menu_item_1, menu_item_2</p>
+                                    <p><strong>Logo metadata:</strong> {"{"}"alt": "Company Logo", "width": "32", "height": "32"{"}"}</p>
+                                    <p><strong>Tip:</strong> Use logo_text for text logo and logo_image for image logo</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             {showForm && (
                 <ContentForm
                     content={editingContent}
-                    section="portfolio"
+                    section="navbar"
                     onCancel={handleCloseForm}
                 />
             )}

@@ -21,7 +21,7 @@ class CmsController extends Controller
             ->orderBy('section')
             ->pluck('section');
 
-        return Inertia::render('CMS/Sections', [
+        return Inertia::render('CMS/General/sections', [
             'sections' => $sections
         ]);
     }
@@ -147,7 +147,7 @@ class CmsController extends Controller
     public function hero()
     {
         $contents = LandingPageContent::bySection('hero')->ordered()->get();
-        return Inertia::render('CMS/Hero', ['contents' => $contents]);
+        return Inertia::render('CMS/Hero/index', ['contents' => $contents]);
     }
 
     public function updateHero(Request $request)
@@ -202,7 +202,7 @@ class CmsController extends Controller
     public function about()
     {
         $contents = LandingPageContent::bySection('about')->ordered()->get();
-        return Inertia::render('CMS/About', ['contents' => $contents]);
+        return Inertia::render('CMS/About/index', ['contents' => $contents]);
     }
 
     public function updateAbout(Request $request)
@@ -325,13 +325,13 @@ class CmsController extends Controller
     public function navbar()
     {
         $contents = LandingPageContent::bySection('navbar')->ordered()->get();
-        return Inertia::render('CMS/Navbar', ['contents' => $contents]);
+        return Inertia::render('CMS/Navigation/navbar', ['contents' => $contents]);
     }
 
     public function footer()
     {
         $contents = LandingPageContent::bySection('footer')->ordered()->get();
-        return Inertia::render('CMS/Footer', ['contents' => $contents]);
+        return Inertia::render('CMS/Navigation/footer', ['contents' => $contents]);
     }
 
     public function activities()

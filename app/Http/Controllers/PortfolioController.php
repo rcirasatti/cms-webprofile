@@ -26,7 +26,7 @@ class PortfolioController extends Controller
             ];
         });
 
-        return Inertia::render('CMS/PortfolioTable', [
+        return Inertia::render('CMS/Portfolio/table', [
             'portfolios' => $portfolios,
             'auth' => [
                 'user' => auth()->user()

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import HeroForm from '@/Components/CMS/HeroForm';
+import HeroForm from './form';
 import { Head } from '@inertiajs/react';
 
 export default function Hero({ auth, contents }) {

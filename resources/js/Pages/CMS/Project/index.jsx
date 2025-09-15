@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ProjectForm from '@/Components/CMS/ProjectForm';
+import ProjectForm from './form';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function ProjectTable({ auth, projects }) {

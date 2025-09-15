@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ClientForm from '@/Components/CMS/ClientForm';
+import ClientForm from './form';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function ClientTable({ auth, clients }) {

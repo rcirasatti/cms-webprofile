@@ -11,7 +11,7 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::ordered()->get();
-        return Inertia::render('CMS/ProjectTable', ['projects' => $projects]);
+        return Inertia::render('CMS/Project/index', ['projects' => $projects]);
     }
 
     public function store(Request $request)

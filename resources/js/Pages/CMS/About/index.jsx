@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SidebarLayout from "@/Layouts/SidebarLayout";
-import AboutForm from "@/Components/CMS/AboutForm";
+import AboutForm from "./form";
 import { Head } from "@inertiajs/react";
 
 export default function About({ auth, contents }) {
