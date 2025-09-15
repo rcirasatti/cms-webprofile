@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 const Navbar = ({ content = {} }) => {
   const [activeSection, setActiveSection] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Helper function to get content value by key
   const getContentValue = (key, defaultValue = '') => {
-    const contentArray = content.navbar || []; // This should be the array from landing_page_contents
+    const contentArray = content.navbar || [];
     const item = contentArray.find(item => item.key === key);
     return item ? item.value : defaultValue;
   };
@@ -16,6 +17,9 @@ const Navbar = ({ content = {} }) => {
 
   useEffect(() => {
     const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+      
       const sections = ["home", "about", "projects", "portfolio", "clients", "contact"];
       let currentSection = "home";
 
@@ -49,8 +53,8 @@ const Navbar = ({ content = {} }) => {
         top: offsetPosition,
         behavior: "smooth",
       });
-      setIsMenuOpen(false);
     }
+    setIsMenuOpen(false);
   };
 
   const navItems = [
@@ -64,17 +68,13 @@ const Navbar = ({ content = {} }) => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
-  ${
-    activeSection === "home"
-      ? "bg-transparent border-none" 
-      : activeSection === "portfolio" 
-        ? "bg-[#1c2c1f] border-b border-[#4A6741]/20 shadow-lg" 
-        : activeSection === "clients"
-          ? "bg-[#1c2c1f]/80 border-b border-[#4A6741]/20 shadow-lg backdrop-blur-sm" 
-          : "bg-[#1c2c1f]/90 border-b border-[#4A6741]/20 shadow-lg backdrop-blur-md"
-  }
-`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out
+        ${
+          isScrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50"
+            : "bg-transparent"
+        }
+      `}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
@@ -92,19 +92,29 @@ const Navbar = ({ content = {} }) => {
               <button
                 key={id}
                 onClick={() => scrollToSection(id)}
-                className={`relative px-5 py-2 rounded-md text-sm font-medium transition-all duration-300
+                className={`relative px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300
                   ${
                     activeSection === id
-                      ? "text-[#4CAF50] font-semibold"
-                      : activeSection === "home" 
-                        ? "text-white hover:text-[#4CAF50] hover:bg-white/10"
-                        : "text-white hover:text-[#4CAF50] hover:bg-white/5"
+                      ? isScrolled 
+                        ? "text-[hsl(148,41%,58%)] font-semibold"
+                        : "text-white font-semibold"
+                      : isScrolled
+                        ? "text-[hsl(210,72%,25%)] hover:text-[hsl(148,41%,58%)]"
+                        : "text-white/90 hover:text-white"
                   }
                 `}
               >
                 {label}
-                {activeSection === id && activeSection !== "home" && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-[#4CAF50]/50 via-[#4CAF50] to-[#4CAF50]/50 rounded-full shadow-md" />
+                {activeSection === id && (
+                  <span 
+                    className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full transition-all duration-300
+                      ${
+                        isScrolled 
+                          ? "bg-[hsl(148,41%,58%)]" 
+                          : "bg-white"
+                      }
+                    `} 
+                  />
                 )}
               </button>
             ))}
@@ -114,7 +124,13 @@ const Navbar = ({ content = {} }) => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-[#4CAF50] hover:bg-white/10 transition-all duration-300"
+              className={`inline-flex items-center justify-center p-2 rounded-lg transition-all duration-300
+                ${
+                  isScrolled
+                    ? "text-[hsl(210,72%,25%)] hover:text-[hsl(148,41%,58%)]"
+                    : "text-white hover:text-white"
+                }
+              `}
               aria-label="Menu"
             >
               <svg
@@ -146,16 +162,28 @@ const Navbar = ({ content = {} }) => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-1 bg-[#1c2c1f]/95 rounded-lg p-2 mt-2 backdrop-blur-lg border border-white/5">
+            <div 
+              className={`flex flex-col space-y-1 rounded-xl p-3 mt-2 backdrop-blur-lg border transition-all duration-300
+                ${
+                  isScrolled
+                    ? "bg-white/95 border-gray-200/50"
+                    : "bg-white/10 border-white/20"
+                }
+              `}
+            >
               {navItems.map(({ id, label }) => (
                 <button
                   key={id}
                   onClick={() => scrollToSection(id)}
-                  className={`px-4 py-3 rounded-md text-sm font-medium transition-all duration-300
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300
                     ${
                       activeSection === id
-                        ? "text-[#4CAF50] bg-white/5 font-semibold"
-                        : "text-white/90 hover:text-[#4CAF50] hover:bg-white/5"
+                        ? isScrolled
+                          ? "text-[hsl(148,41%,58%)] font-semibold"
+                          : "text-white font-semibold"
+                        : isScrolled
+                          ? "text-[hsl(210,72%,25%)] hover:text-[hsl(148,41%,58%)]"
+                          : "text-white/90 hover:text-white"
                     }
                   `}
                 >

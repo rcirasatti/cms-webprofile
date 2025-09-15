@@ -207,36 +207,37 @@ class CmsController extends Controller
 
     public function updateAbout(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'features_title' => 'nullable|string|max:255',
-            'feature1_title' => 'nullable|string|max:255',
-            'feature1_description' => 'nullable|string',
-            'feature2_title' => 'nullable|string|max:255',
-            'feature2_description' => 'nullable|string',
-            'feature3_title' => 'nullable|string|max:255',
-            'feature3_description' => 'nullable|string',
-            'experience_number' => 'nullable|string|max:255',
-            'experience_text' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
+                'features_title' => 'nullable|string|max:255',
+                'feature1_title' => 'nullable|string|max:255',
+                'feature1_description' => 'nullable|string',
+                'feature2_title' => 'nullable|string|max:255',
+                'feature2_description' => 'nullable|string',
+                'feature3_title' => 'nullable|string|max:255',
+                'feature3_description' => 'nullable|string',
+                'experience_number' => 'nullable|string|max:255',
+                'experience_text' => 'nullable|string|max:255',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            ]);
 
-        // Handle image upload if provided
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            // Handle image upload if provided
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
 
-            // Create uploads directory if it doesn't exist
-            $uploadPath = public_path('assets/images/uploads');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
+                // Create uploads directory if it doesn't exist
+                $uploadPath = public_path('assets/images/uploads');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                $image->move($uploadPath, $imageName);
+                $imagePath = '/assets/images/uploads/' . $imageName;
             }
-
-            $image->move($uploadPath, $imageName);
-            $imagePath = '/assets/images/uploads/' . $imageName;
-        }
 
         // Update or create each content item
         $contentUpdates = [
@@ -307,7 +308,18 @@ class CmsController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'About content updated successfully!');
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => 'About content updated successfully!'
+        ]);
+        
+        } catch (\Exception $e) {
+            Log::error('About update failed: ' . $e->getMessage());
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => 'Failed to update about content. Please try again.'
+            ]);
+        }
     }
 
     public function portfolio()

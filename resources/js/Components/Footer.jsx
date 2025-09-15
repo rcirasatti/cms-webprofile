@@ -51,10 +51,10 @@ const Footer = ({ content = {} }) => {
     const mapsEmbed = getContentValue("maps_embed", "");
 
     return (
-        <footer className="bg-gradient-to-br from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F] pt-8 pb-4 relative overflow-hidden">
+        <footer className="bg-gradient-to-br from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] pt-8 pb-4 relative overflow-hidden">
             <div className="absolute inset-0">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-10"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10"></div>
             </div>
 
             <div className="container mx-auto px-4 relative">

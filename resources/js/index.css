@@ -11,6 +11,8 @@
   --color-card: hsl(var(--card));
 
   --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float-slow 8s ease-in-out infinite;
+  --animate-float-delayed: float-delayed 6s ease-in-out infinite 2s;
   --animate-pulse-subtle: pulse-subtle 4s ease-in-out infinite;
   --animate-fade-in: fade-in 0.7s ease-out forwards;
   --animate-fade-in-delay-1: fade-in 0.7s ease-out 0.2s forwards;
@@ -49,6 +51,27 @@
       transform: translateY(-10px);
     }
   }
+  
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+  
+  @keyframes float-delayed {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  
   @keyframes pulse-subtle {
     0%,
     100% {
@@ -85,39 +108,39 @@
 
 @layer base {
   :root {
-    --background: 108 25% 95%;
-    --foreground: 106 35% 15%;
+    --background: 146 51% 91%;
+    --foreground: 210 72% 25%;
 
-    --card: 106 30% 97%;
+    --card: 146 51% 95%;
 
-    --primary: 106 35% 35%;
+    --primary: 148 41% 58%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 142 38% 40%;
+    --secondary: 210 72% 25%;
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 83 35% 38%;
+    --accent: 148 41% 58%;
     --accent-foreground: 0 0% 100%;
 
-    --border: 106 25% 85%;
+    --border: 146 51% 85%;
   }
 
   .dark {
-    --background: 106 15% 8%;
-    --foreground: 120 10% 95%;
+    --background: 210 72% 8%;
+    --foreground: 146 51% 91%;
 
-    --card: 106 15% 10%;
+    --card: 210 72% 10%;
 
-    --primary: 106 30% 40%;
-    --primary-foreground: 120 10% 95%;
+    --primary: 148 41% 58%;
+    --primary-foreground: 146 51% 91%;
     
-    --secondary: 142 32% 45%;
-    --secondary-foreground: 120 10% 95%;
+    --secondary: 148 41% 45%;
+    --secondary-foreground: 146 51% 91%;
     
-    --accent: 83 28% 45%;
-    --accent-foreground: 120 10% 95%;
+    --accent: 146 51% 75%;
+    --accent-foreground: 210 72% 25%;
 
-    --border: 106 20% 15%;
+    --border: 210 72% 15%;
   }
 
   * {

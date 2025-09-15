@@ -12,6 +12,12 @@ import { Head } from '@inertiajs/react';
 export default function LandingPage({ content = {} }) {
     const [activeFilter, setActiveFilter] = useState("all");
 
+    // Filter projects based on category
+    const filteredProjects = content.projects ? content.projects.filter(project => {
+        if (activeFilter === "all") return true;
+        return project.category === activeFilter;
+    }) : [];
+
     // Handle smooth scroll to About section
     const handleExploreClick = () => {
         const aboutSection = document.getElementById("about");
@@ -29,7 +35,7 @@ export default function LandingPage({ content = {} }) {
 
     return (
         <main className="App min-h-screen bg-gradient-to-b from-[#F5F8F5] via-[#EDF3EC] to-[#E8EFEA] relative">
-            {/* Background grid pattern */}
+            {/* Background patterns matching omah-iot */}
             <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptMCAyYTQgNCAwIDEwMCA4IDQgNCAwIDAwMC04eiIgZmlsbD0icmdiYSg3NCwxMDMsNjUsMC4wOCkiLz48L2c+PC9zdmc+')] opacity-20 -z-10" />
             <div className="fixed inset-0 bg-gradient-to-t from-[#E8EFEA] via-transparent to-transparent opacity-50 -z-10" />
             
@@ -41,7 +47,7 @@ export default function LandingPage({ content = {} }) {
                 <ProjectsSection 
                     activeFilter={activeFilter} 
                     setActiveFilter={setActiveFilter} 
-                    filteredProjects={[]}
+                    filteredProjects={filteredProjects}
                     content={content}
                 />
                 <PortfolioSection content={content.portfolios || []} />

@@ -20,42 +20,41 @@ const AboutSection = ({ content = {} }) => {
     const feature3Desc = getContentValue('feature3_description', 'We prioritize sustainability in our designs, helping clients reduce environmental impact while improving operational efficiency.');
     const experienceNumber = getContentValue('experience_number', '5+');
     const experienceText = getContentValue('experience_text', 'Years Experience');
-
 return (
     <section
       id="about"
-      className="py-24 bg-gradient-to-b from-background via-card to-background relative overflow-hidden"
+      className="py-24 bg-gradient-to-b from-[hsl(146,51%,91%)] via-white to-[hsl(146,51%,91%)] relative overflow-hidden"
     >
-     <div className="absolute inset-0">
-        <div className="absolute inset-0 opacity-[0.02] pattern-grid [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 opacity-[0.03] pattern-grid [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
       </div>
 
       <div className="container mx-auto relative">
         <div className="max-w-3xl mx-auto text-center mb-16">
           <div className="relative inline-block mb-4">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-2xl blur-lg opacity-50"></div>
-            <h2 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2C3A2F] via-[#4A6741] to-[#2C3A2F]">
+            <div className="absolute -inset-4 bg-gradient-to-r from-[hsl(148,41%,58%)]/20 via-[hsl(210,72%,25%)]/20 to-[hsl(148,41%,58%)]/20 rounded-2xl blur-lg opacity-60"></div>
+            <h2 className="text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] leading-tight">
               {title}
             </h2>
             {/* Decorative underline */}
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#2C3A2F] to-[#4A6741] rounded-full"></div>
+            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] rounded-full"></div>
           </div>
-          <p className="text-lg leading-relaxed mt-6 text-foreground/80 max-w-2xl mx-auto">
+          <p className="text-lg leading-relaxed mt-6 text-[hsl(210,72%,25%)]/80 max-w-2xl mx-auto">
             {description}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-10 items-center max-w-4xl mx-auto">
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-primary text-center md:text-left">
+            <h3 className="text-xl font-semibold text-[hsl(148,41%,58%)] text-center md:text-left">
               {featuresTitle}
             </h3>
             <div className="grid grid-cols-1 gap-4">
-              <div className="group hover:bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 p-0.5 rounded-xl transition-all duration-300">
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-card backdrop-blur-sm transition-all duration-300">
-                  <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 rounded-xl group-hover:bg-gradient-to-br group-hover:from-primary/20 group-hover:to-secondary/20 transition-colors">
+              <div className="group hover:bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 p-0.5 rounded-xl transition-all duration-300">
+                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white/80 backdrop-blur-sm transition-all duration-300 border border-[hsl(146,51%,91%)]/50">
+                  <div className="bg-gradient-to-br from-[hsl(148,41%,58%)]/15 to-[hsl(210,72%,25%)]/15 p-3 rounded-xl group-hover:bg-gradient-to-br group-hover:from-[hsl(148,41%,58%)]/25 group-hover:to-[hsl(210,72%,25%)]/25 transition-colors">
                     <svg
-                      className="w-6 h-6 text-primary"
+                      className="w-6 h-6 text-[hsl(148,41%,58%)]"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -69,20 +68,20 @@ return (
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors">
+                    <h4 className="font-semibold text-base mb-2 text-[hsl(210,72%,25%)] group-hover:text-[hsl(148,41%,58%)] transition-colors">
                       {feature1Title}
                     </h4>
-                    <p className="text-sm text-foreground/70 group-hover:text-foreground/90 transition-colors">
+                    <p className="text-sm text-[hsl(210,72%,25%)]/70 group-hover:text-[hsl(210,72%,25%)]/90 transition-colors">
                       {feature1Desc}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="group flex items-start space-x-4 p-4 rounded-lg bg-background/50 hover:bg-primary/5 transition-all duration-300 hover:scale-[1.02]">
-                <div className="bg-primary/10 p-3 rounded-lg group-hover:bg-primary/20 transition-colors">
+              <div className="group flex items-start space-x-4 p-4 rounded-lg bg-white/60 hover:bg-[hsl(148,41%,58%)]/10 transition-all duration-300 hover:scale-[1.02] border border-[hsl(146,51%,91%)]/30">
+                <div className="bg-[hsl(148,41%,58%)]/15 p-3 rounded-lg group-hover:bg-[hsl(148,41%,58%)]/25 transition-colors">
                   <svg
-                    className="w-5 h-5 text-primary"
+                    className="w-5 h-5 text-[hsl(148,41%,58%)]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -96,19 +95,19 @@ return (
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-1">
+                  <h4 className="font-semibold text-sm mb-1 text-[hsl(210,72%,25%)]">
                     {feature2Title}
                   </h4>
-                  <p className="text-sm text-foreground/70">
+                  <p className="text-sm text-[hsl(210,72%,25%)]/70">
                     {feature2Desc}
                   </p>
                 </div>
               </div>
 
-              <div className="group flex items-start space-x-4 p-4 rounded-lg bg-background/50 hover:bg-primary/5 transition-all duration-300 hover:scale-[1.02]">
-                <div className="bg-primary/10 p-3 rounded-lg group-hover:bg-primary/20 transition-colors">
+              <div className="group flex items-start space-x-4 p-4 rounded-lg bg-white/60 hover:bg-[hsl(148,41%,58%)]/10 transition-all duration-300 hover:scale-[1.02] border border-[hsl(146,51%,91%)]/30">
+                <div className="bg-[hsl(148,41%,58%)]/15 p-3 rounded-lg group-hover:bg-[hsl(148,41%,58%)]/25 transition-colors">
                   <svg
-                    className="w-5 h-5 text-primary"
+                    className="w-5 h-5 text-[hsl(148,41%,58%)]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -122,10 +121,10 @@ return (
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-1">
+                  <h4 className="font-semibold text-sm mb-1 text-[hsl(210,72%,25%)]">
                     {feature3Title}
                   </h4>
-                  <p className="text-sm text-foreground/70">
+                  <p className="text-sm text-[hsl(210,72%,25%)]/70">
                     {feature3Desc}
                   </p>
                 </div>
@@ -133,15 +132,15 @@ return (
             </div>
           </div>
 
-         <div className="relative mt-6 md:mt-0">
-            <div className="absolute inset-0 bg-primary/10 rounded-lg transform rotate-3 scale-105"></div>
-            <div className="relative bg-card rounded-lg p-4 shadow-lg">
+          <div className="relative mt-6 md:mt-0">
+            <div className="absolute inset-0 bg-[hsl(148,41%,58%)]/20 rounded-lg transform rotate-3 scale-105"></div>
+            <div className="relative bg-white/90 rounded-lg p-4 shadow-lg border border-[hsl(146,51%,91%)]/50">
               <img
                 src={image}
-                alt={title}
+                alt="About Us"
                 className="w-full h-auto rounded-lg"
               />
-              <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground p-3 rounded-lg shadow-lg">
+              <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] text-white p-3 rounded-lg shadow-lg">
                 <p className="font-bold text-lg">{experienceNumber}</p>
                 <p className="text-xs">{experienceText}</p>
               </div>

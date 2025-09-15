@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { useForm, router } from '@inertiajs/react';
+import Alert from '../../../Components/ui/Alert';
 
 export default function AboutForm({ contents, onCancel }) {
+    const currentImage = contents.find(c => c.key === 'image')?.value || '';
+    const [previewUrl, setPreviewUrl] = useState(currentImage);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+
     const { data, setData, post, patch, processing, errors, reset } = useForm({
         title: contents.find(c => c.key === 'title')?.value || '',
         description: contents.find(c => c.key === 'description')?.value || '',
-        image: null, // Changed to null for file upload
+        image: null, // File upload
         features_title: contents.find(c => c.key === 'features_title')?.value || '',
         feature1_title: contents.find(c => c.key === 'feature1_title')?.value || '',
         feature1_description: contents.find(c => c.key === 'feature1_description')?.value || '',
@@ -60,19 +67,61 @@ export default function AboutForm({ contents, onCancel }) {
         router.post(route('cms.about.update'), formData, {
             forceFormData: true,
             onSuccess: () => {
-                alert('About content updated successfully!');
-                onCancel();
-                window.location.reload();
+                setAlertMessage('About content updated successfully!');
+                setShowSuccess(true);
+                setTimeout(() => {
+                    setShowSuccess(false);
+                    onCancel();
+                    window.location.reload();
+                }, 2000);
             },
             onError: (errors) => {
                 console.error('Update failed:', errors);
-                alert('Failed to update content: ' + JSON.stringify(errors));
+                setAlertMessage('Failed to update content. Please try again.');
+                setShowError(true);
+                setTimeout(() => {
+                    setShowError(false);
+                }, 3000);
             }
         });
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setData('image', file);
+        
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        } else {
+            setPreviewUrl(currentImage);
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            {/* Success Alert */}
+            {showSuccess && (
+                <Alert 
+                    type="success" 
+                    message={alertMessage} 
+                    onClose={() => setShowSuccess(false)}
+                    autoClose={true}
+                    duration={2000}
+                />
+            )}
+
+            {/* Error Alert */}
+            {showError && (
+                <Alert 
+                    type="error" 
+                    message={alertMessage} 
+                    onClose={() => setShowError(false)}
+                    autoClose={true}
+                    duration={3000}
+                />
+            )}
+
             <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">
                 <div className="mt-3">
                     <div className="flex justify-between items-center mb-4">
@@ -111,14 +160,32 @@ export default function AboutForm({ contents, onCancel }) {
                                     />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Image Upload</label>
                                     <input
-                                        type="text"
-                                        value={data.image}
-                                        onChange={(e) => setData('image', e.target.value)}
-                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="/assets/images/about-us.jpg"
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                     />
+                                    {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
+                                    
+                                    {/* Image Preview */}
+                                    {previewUrl && (
+                                        <div className="mt-3">
+                                            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                                            <img
+                                                src={previewUrl}
+                                                alt="About image preview"
+                                                className="max-w-xs max-h-48 object-cover rounded-lg shadow-md"
+                                            />
+                                            {currentImage && !data.image && (
+                                                <p className="text-xs text-gray-500 mt-1">Current image</p>
+                                            )}
+                                            {data.image && (
+                                                <p className="text-xs text-green-600 mt-1">New image selected</p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
