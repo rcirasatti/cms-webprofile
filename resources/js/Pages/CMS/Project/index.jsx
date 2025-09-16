@@ -8,6 +8,11 @@ export default function ProjectTable({ auth, projects }) {
     const [editingProject, setEditingProject] = useState(null);
     const { delete: deleteProject } = useForm();
 
+    // UI state for search and pagination
+    const [query, setQuery] = useState('');
+    const [perPage, setPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+
     const handleEdit = (project) => {
         setEditingProject(project);
         setShowForm(true);
@@ -26,6 +31,13 @@ export default function ProjectTable({ auth, projects }) {
 
     // Projects are now passed directly from the controller
 
+    const projectList = Array.isArray(projects) ? projects : [];
+    const filtered = projectList.filter(p => (p.title || '').toLowerCase().includes(query.toLowerCase()));
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const startIndex = (currentPage - 1) * perPage;
+    const paginated = filtered.slice(startIndex, startIndex + perPage);
+
     return (
         <SidebarLayout>
             <Head title="Projects Section - CMS" />
@@ -36,16 +48,41 @@ export default function ProjectTable({ auth, projects }) {
                         <div>
                             <h1 className="text-2xl font-bold text-gray-800">Projects Section</h1>
                             <p className="text-gray-600">Manage project content and showcase your work</p>
+
+                            <div className="mt-3">
+                                <select
+                                    value={perPage}
+                                    onChange={(e) => { setPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                                    className="border rounded-md px-3 py-2 text-sm w-15"
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
-                        <button
-                            onClick={() => {
-                                setEditingProject(null);
-                                setShowForm(true);
-                            }}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-                        >
-                            Add New Project
-                        </button>
+
+                        <div className="flex items-center ml-auto">
+                            <div className="flex flex-col items-end space-y-2">
+                                <button
+                                    onClick={() => {
+                                        setEditingProject(null);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+                                >
+                                    Add New Project
+                                </button>
+
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
+                                    placeholder="Search projects..."
+                                    className="border rounded-md px-3 py-2 text-sm w-56"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Projects Table */}
@@ -74,7 +111,7 @@ export default function ProjectTable({ auth, projects }) {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {projects.map((project) => (
+                                {paginated.map((project) => (
                                     <tr key={project.id}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
@@ -137,7 +174,7 @@ export default function ProjectTable({ auth, projects }) {
                                     </tr>
                                 ))}
                                 
-                                {projects.length === 0 && (
+                                {paginated.length === 0 && (
                                     <tr>
                                         <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
                                             No projects found. Click "Add New Project" to create one.
@@ -146,6 +183,33 @@ export default function ProjectTable({ auth, projects }) {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Pagination */}
+                    <div className="flex items-center justify-between mt-4">
+                        <div className="text-sm text-gray-600">Showing {Math.min(startIndex+1, total)} - {Math.min(startIndex + paginated.length, total)} of {total} projects</div>
+
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p-1))}
+                                disabled={currentPage === 1}
+                                className="px-2 py-1 border rounded disabled:opacity-50"
+                            >
+                                Prev
+                            </button>
+
+                            <div className="text-sm">
+                                Page {currentPage} / {totalPages}
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))}
+                                disabled={currentPage === totalPages}
+                                className="px-2 py-1 border rounded disabled:opacity-50"
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
