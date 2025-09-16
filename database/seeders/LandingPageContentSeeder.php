@@ -17,7 +17,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'hero',
             'key' => 'title',
-            'value' => 'Welcome to Our Amazing Website',
+            'value' => 'Welcome to OmahIoT',
             'order' => 1,
             'is_active' => true
         ]);
@@ -25,7 +25,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'hero',
             'key' => 'subtitle',
-            'value' => 'We create extraordinary digital experiences',
+            'value' => 'Transforming Ideas into Solutions with IoT and Digital Innovation',
             'order' => 2,
             'is_active' => true
         ]);
@@ -33,7 +33,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'hero',
             'key' => 'button_text',
-            'value' => 'Get Started',
+            'value' => 'Explore Our Solutions',
             'order' => 3,
             'is_active' => true
         ]);
@@ -59,7 +59,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'about',
             'key' => 'description',
-            'value' => 'We are a team of passionate developers and designers who love creating amazing digital experiences. Our mission is to help businesses grow through innovative technology solutions.',
+            'value' => 'We are a pioneering technology company dedicated to bringing innovative IoT solutions to agricultural, aquacultural, and urban sectors, making technology accessible and impactful for everyone.',
             'order' => 2,
             'is_active' => true
         ]);
@@ -67,7 +67,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'about',
             'key' => 'image',
-            'value' => '/assets/images/about-us.jpg',
+            'value' => 'assets\images\omah-iot1.png',
             'metadata' => ['alt' => 'About Us Image'],
             'order' => 3,
             'is_active' => true
@@ -117,18 +117,6 @@ class LandingPageContentSeeder extends Seeder
             'is_active' => true
         ]);
 
-        LandingPageContent::create([
-            'section' => 'portfolio',
-            'key' => 'portfolio_1',
-            'value' => 'Web Design Portfolio',
-            'metadata' => [
-                'category' => 'Web Design',
-                'image' => '/assets/images/portfolio1.jpg',
-                'link' => '#'
-            ],
-            'order' => 2,
-            'is_active' => true
-        ]);
 
         // Clients Section
         LandingPageContent::create([
@@ -136,18 +124,6 @@ class LandingPageContentSeeder extends Seeder
             'key' => 'title',
             'value' => 'Our Clients',
             'order' => 1,
-            'is_active' => true
-        ]);
-
-        LandingPageContent::create([
-            'section' => 'client',
-            'key' => 'client_1',
-            'value' => 'Company ABC',
-            'metadata' => [
-                'logo' => '/assets/images/client1.png',
-                'website' => 'https://companyabc.com'
-            ],
-            'order' => 2,
             'is_active' => true
         ]);
 
@@ -163,7 +139,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'contact',
             'key' => 'address',
-            'value' => '123 Main Street, City, Country',
+            'value' => 'Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota Semarang, Jawa Tengah 50277',
             'order' => 2,
             'is_active' => true
         ]);
@@ -171,7 +147,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'contact',
             'key' => 'email',
-            'value' => 'contact@ourcompany.com',
+            'value' => 'omahiot@gmail.com',
             'order' => 3,
             'is_active' => true
         ]);
@@ -179,7 +155,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'contact',
             'key' => 'phone',
-            'value' => '+1 234 567 8900',
+            'value' => '+62 8127-6253-242',
             'order' => 4,
             'is_active' => true
         ]);
@@ -206,7 +182,7 @@ class LandingPageContentSeeder extends Seeder
         LandingPageContent::create([
             'section' => 'footer',
             'key' => 'copyright',
-            'value' => '© 2025 Your Company. All rights reserved.',
+            'value' => '© 2025 OmahIoT. All rights reserved.',
             'order' => 1,
             'is_active' => true
         ]);
@@ -215,7 +191,7 @@ class LandingPageContentSeeder extends Seeder
             'section' => 'footer',
             'key' => 'social_facebook',
             'value' => 'https://facebook.com/yourcompany',
-            'metadata' => ['platform' => 'facebook'],
+            'metadata' => ['platform' => 'linkedin'],
             'order' => 2,
             'is_active' => true
         ]);
@@ -225,6 +201,14 @@ class LandingPageContentSeeder extends Seeder
             'key' => 'social_instagram',
             'value' => 'https://instagram.com/yourcompany',
             'metadata' => ['platform' => 'instagram'],
+            'order' => 3,
+            'is_active' => true
+        ]);
+        LandingPageContent::create([
+            'section' => 'footer',
+            'key' => 'social_instagram',
+            'value' => 'https://instagram.com/yourcompany',
+            'metadata' => ['platform' => 'youtube'],
             'order' => 3,
             'is_active' => true
         ]);

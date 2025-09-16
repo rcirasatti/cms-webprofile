@@ -2,104 +2,91 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\LandingPageContent;
+use App\Models\Project;
 
 class ProjectsSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        // Delete existing project data except title
-        LandingPageContent::where('section', 'project')
-            ->where('key', '!=', 'title')
-            ->delete();
+        // Clear existing data
+        Project::truncate();
 
         $projects = [
             [
                 'title' => 'MOKO',
-                'description' => 'MOKO memudahkan pengelolaan kolam koi',
-                'image' => '/assets/images/koi1-1.png',
-                'category' => 'IoT Solution'
+                'description' => 'MOKO memudahkan pengelolaan kolam koi dengan monitoring kualitas air real-time',
+                'image_path' => '/assets/images/koi1-1.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 1
             ],
             [
                 'title' => 'AUTOFEEDER',
-                'description' => 'Meningkatkan kualitas berbagai jenis ikan',
-                'image' => '/assets/images/autofeeder1-1.png',
-                'category' => 'IoT Solution'
+                'description' => 'Meningkatkan kualitas berbagai jenis ikan dengan sistem pemberian pakan otomatis',
+                'image_path' => '/assets/images/autofeeder1-1.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 2
             ],
             [
                 'title' => 'MONIK',
-                'description' => 'MONIK memudahkan pengelolaan greenhouse',
-                'image' => '/assets/images/hidroponik1-1.png',
-                'category' => 'IoT Solution'
+                'description' => 'MONIK memudahkan pengelolaan greenhouse dengan monitoring suhu dan kelembaban',
+                'image_path' => '/assets/images/hidroponik1-1.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 3
             ],
             [
                 'title' => 'MOBAN',
-                'description' => 'MOBAN membantu memantau curah hujan di tempat yang rawan.',
-                'image' => '/assets/images/monitoringhujan.png',
-                'category' => 'IoT Solution'
+                'description' => 'MOBAN membantu memantau curah hujan di tempat yang rawan banjir',
+                'image_path' => '/assets/images/monitoringhujan.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 4
             ],
             [
                 'title' => 'MANIS',
-                'description' => 'MANIS memudahkan pengelolaan lahan pertanian.',
-                'image' => '/assets/images/penyiraman1-1.png',
-                'category' => 'IoT Solution'
+                'description' => 'MANIS memudahkan pengelolaan lahan pertanian dengan sistem irigasi pintar',
+                'image_path' => '/assets/images/penyiraman1-1.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 5
             ],
             [
                 'title' => 'MOCKA',
-                'description' => 'MOCKA untuk kandang ayam closed house dan konvensional',
-                'image' => '/assets/images/kandangayam1-1.png',
-                'category' => 'IoT Solution'
+                'description' => 'MOCKA untuk kandang ayam closed house dan konvensional dengan monitoring otomatis',
+                'image_path' => '/assets/images/kandangayam1-1.png',
+                'category' => 'IoT Solution',
+                'is_active' => true,
+                'order' => 6
             ],
             [
-                'title' => 'WEBSITE',
-                'description' => 'Jasa pembuatan custom website',
-                'image' => '/assets/images/website.png',
-                'category' => 'Digital Solution'
+                'title' => 'Website Development',
+                'description' => 'Jasa pembuatan custom website dengan teknologi modern dan responsive design',
+                'image_path' => '/assets/images/website.png',
+                'category' => 'Digital Solution',
+                'is_active' => true,
+                'order' => 7
             ],
             [
-                'title' => 'ANDROID',
-                'description' => 'Jasa pembuatan custom android',
-                'image' => '/assets/images/androidd.png',
-                'category' => 'Digital Solution'
+                'title' => 'Android App Development',
+                'description' => 'Jasa pembuatan custom aplikasi android sesuai kebutuhan bisnis Anda',
+                'image_path' => '/assets/images/androidd.png',
+                'category' => 'Digital Solution',
+                'is_active' => true,
+                'order' => 8
             ]
         ];
 
-        $order = 1;
-        foreach ($projects as $index => $project) {
-            $projectKey = 'project_' . ($index + 1);
-            
-            LandingPageContent::create([
-                'section' => 'project',
-                'key' => $projectKey . '_title',
-                'value' => $project['title'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
-            
-            LandingPageContent::create([
-                'section' => 'project',
-                'key' => $projectKey . '_description',
-                'value' => $project['description'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
-            
-            LandingPageContent::create([
-                'section' => 'project',
-                'key' => $projectKey . '_image',
-                'value' => $project['image'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
-            
-            LandingPageContent::create([
-                'section' => 'project',
-                'key' => $projectKey . '_category',
-                'value' => $project['category'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
+        foreach ($projects as $project) {
+            Project::create($project);
         }
+
+        $this->command->info('✅ Created ' . count($projects) . ' projects in projects table');
     }
 }

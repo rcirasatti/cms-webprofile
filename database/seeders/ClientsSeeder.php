@@ -3,51 +3,34 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\LandingPageContent;
+use App\Models\Client;
 
 class ClientsSeeder extends Seeder
 {
     public function run()
     {
-        // Delete existing client data except title
-        LandingPageContent::where('section', 'client')
-            ->where('key', '!=', 'title')
-            ->delete();
+        // Clear existing data
+        Client::truncate();
 
         $clients = [
-            ['name' => 'Bawen', 'logo' => '/assets/images/logo/bawen.png'],
-            ['name' => 'HAB', 'logo' => '/assets/images/logo/hab.png'],
-            ['name' => 'JG Koi', 'logo' => '/assets/images/logo/jgkoi.jpg'],
-            ['name' => 'Kartika', 'logo' => '/assets/images/logo/kartika.jpg'],
-            ['name' => 'Kois', 'logo' => '/assets/images/logo/kois.png'],
-            ['name' => 'MKC', 'logo' => '/assets/images/logo/logo_mkc.jpg'],
-            ['name' => 'ZNA Malaysia', 'logo' => '/assets/images/logo/logoznamalaysiaasli.jpg'],
-            ['name' => 'Mustika', 'logo' => '/assets/images/logo/mustika.png'],
-            ['name' => 'Polines', 'logo' => '/assets/images/logo/polines.png'],
-            ['name' => 'Renadjaja', 'logo' => '/assets/images/logo/renadjaja.jpg'],
-            ['name' => 'Turus', 'logo' => '/assets/images/logo/turus.png'],
-            ['name' => 'Singapore Koi Show', 'logo' => '/assets/images/logo/singaporekoishow.jpg']
+            ['name' => 'Bawen', 'logo_path' => '/assets/images/logo/bawen.png', 'is_active' => true, 'order' => 1],
+            ['name' => 'HAB', 'logo_path' => '/assets/images/logo/hab.png', 'is_active' => true, 'order' => 2],
+            ['name' => 'JG Koi', 'logo_path' => '/assets/images/logo/jgkoi.jpg', 'is_active' => true, 'order' => 3],
+            ['name' => 'Kartika', 'logo_path' => '/assets/images/logo/kartika.jpg', 'is_active' => true, 'order' => 4],
+            ['name' => 'Kois', 'logo_path' => '/assets/images/logo/kois.png', 'is_active' => true, 'order' => 5],
+            ['name' => 'MKC', 'logo_path' => '/assets/images/logo/logo_mkc.jpg', 'is_active' => true, 'order' => 6],
+            ['name' => 'ZNA Malaysia', 'logo_path' => '/assets/images/logo/logoznamalaysiaasli.jpg', 'is_active' => true, 'order' => 7],
+            ['name' => 'Mustika', 'logo_path' => '/assets/images/logo/mustika.png', 'is_active' => true, 'order' => 8],
+            ['name' => 'Polines', 'logo_path' => '/assets/images/logo/polines.png', 'is_active' => true, 'order' => 9],
+            ['name' => 'Renadjaja', 'logo_path' => '/assets/images/logo/renadjaja.jpg', 'is_active' => true, 'order' => 10],
+            ['name' => 'Turus', 'logo_path' => '/assets/images/logo/turus.png', 'is_active' => true, 'order' => 11],
+            ['name' => 'Singapore Koi Show', 'logo_path' => '/assets/images/logo/singaporekoishow.jpg', 'is_active' => true, 'order' => 12]
         ];
 
-        $order = 1;
-        foreach ($clients as $index => $client) {
-            $clientKey = 'client_' . ($index + 1);
-            
-            LandingPageContent::create([
-                'section' => 'client',
-                'key' => $clientKey . '_name',
-                'value' => $client['name'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
-            
-            LandingPageContent::create([
-                'section' => 'client',
-                'key' => $clientKey . '_logo',
-                'value' => $client['logo'],
-                'order' => $order++,
-                'is_active' => true
-            ]);
+        foreach ($clients as $client) {
+            Client::create($client);
         }
+
+        $this->command->info('✅ Created ' . count($clients) . ' clients in clients table');
     }
 }
