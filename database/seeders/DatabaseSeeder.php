@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Page;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -21,11 +20,12 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password123'),
         ]);
 
-        // Transfer existing data from landing_page_contents to dedicated tables
+        // Seed all content
         $this->call([
-            TransferDataSeeder::class,
+            LandingPageContentSeeder::class,
+            PortfolioSeeder::class,
+            ProjectsSeeder::class,
+            ClientsSeeder::class,
         ]);
-
-        // Create sample pages
     }
 }

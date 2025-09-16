@@ -228,5 +228,46 @@ class LandingPageContentSeeder extends Seeder
             'order' => 3,
             'is_active' => true
         ]);
+
+        // Contact Section
+        LandingPageContent::create([
+            'section' => 'contact',
+            'key' => 'title',
+            'value' => 'Contact Us',
+            'order' => 1,
+            'is_active' => true
+        ]);
+
+        LandingPageContent::create([
+            'section' => 'contact',
+            'key' => 'description',
+            'value' => 'Tertarik dengan layanan kami? Hubungi kami sekarang untuk konsultasi gratis dan temukan solusi terbaik untuk bisnis Anda.',
+            'order' => 2,
+            'is_active' => true
+        ]);
+
+        LandingPageContent::create([
+            'section' => 'contact',
+            'key' => 'email',
+            'value' => 'omahiot@gmail.com',
+            'order' => 3,
+            'is_active' => true
+        ]);
+
+        LandingPageContent::create([
+            'section' => 'contact',
+            'key' => 'phone',
+            'value' => '+62 8127-6253-242',
+            'order' => 4,
+            'is_active' => true
+        ]);
+
+        LandingPageContent::create([
+            'section' => 'contact',
+            'key' => 'address',
+            'value' => 'Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota Semarang, Jawa Tengah 50277',
+            'order' => 5,
+            'is_active' => true
+        ]);
     }
 }

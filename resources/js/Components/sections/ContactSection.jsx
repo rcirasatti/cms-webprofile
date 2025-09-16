@@ -11,7 +11,7 @@ const ContactSection = ({ content = [] }) => {
 
   // Get dynamic content from CMS
   const title = getContentValue('title', 'Contact Us');
-  const description = getContentValue('description', 'Tertarik dengan layanan kami? Hubungi kami sekarang untuk konsultasi gratis dan temukan solusi terbaik untuk bisnis Anda.');
+  const subtitle = getContentValue('description', 'Tertarik dengan layanan kami? Hubungi kami sekarang untuk konsultasi gratis dan temukan solusi terbaik untuk bisnis Anda.');
   const email = getContentValue('email', 'omahiot@gmail.com');
   const phone = getContentValue('phone', '+62 8127-6253-242');
   const address = getContentValue('address', 'Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota Semarang, Jawa Tengah 50277');
@@ -29,7 +29,7 @@ const ContactSection = ({ content = [] }) => {
         <div className="max-w-xl mx-auto text-center mb-16">
           <h2 className="text-4xl font-bold mb-6 text-[hsl(210,72%,25%)]">{title}</h2>
           <p className="text-lg text-[hsl(210,72%,25%)]/80 leading-relaxed">
-            {description}
+            {subtitle}
           </p>
         </div>
 
@@ -55,7 +55,7 @@ const ContactSection = ({ content = [] }) => {
                       href="mailto:omahiot@gmail.com"
                       className="text-base font-medium text-[hsl(148,41%,58%)] hover:text-[hsl(148,41%,58%)]/80 transition-all duration-300"
                     >
-                      omahiot@gmail.com
+                      {email}
                     </a>
                   </div>
                 </div>
@@ -81,7 +81,7 @@ const ContactSection = ({ content = [] }) => {
                       href="tel:+62 8127-6253-242"
                       className="text-base font-medium text-[hsl(148,41%,58%)] hover:text-[hsl(148,41%,58%)]/80 transition-all duration-300"
                     >
-                      +62 8127-6253-242
+                      {phone}
                     </a>
                   </div>
                 </div>
@@ -104,8 +104,7 @@ const ContactSection = ({ content = [] }) => {
                       Office Location
                     </p>
                     <p className="text-base font-medium text-[hsl(148,41%,58%)] hover:text-[hsl(148,41%,58%)]/80 transition-all duration-300">
-                      Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota
-                      Semarang, Jawa Tengah 50277
+                      {address}
                     </p>
                   </div>
                 </div>

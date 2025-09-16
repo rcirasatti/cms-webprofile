@@ -22,3 +22,24 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Database
+/database/database.sqlite
+
+# Test & Debug files
+check_*.php
+test_*.php
+cleanup_*.php
+sync_*.php
+final_*.php
+fix_*.php
+update_*.php
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+*.swp
+*.swo
+*~

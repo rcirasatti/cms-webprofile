@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LandingPageContent;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -177,9 +178,29 @@ class CmsController extends Controller
             'background_image' => $bgValue,
         ];
 
-        // Update or create each content item
+        $updatedFields = [];
+        $oldValues = [];
+        $newValues = [];
+
+        // Update or create each content item and track changes
         foreach ($data as $key => $value) {
             if ($value !== null && $value !== '') {
+                $existingContent = LandingPageContent::where('section', 'hero')
+                    ->where('key', $key)
+                    ->first();
+                
+                if ($existingContent) {
+                    $oldValues[$key] = $existingContent->value;
+                    if ($existingContent->value !== $value) {
+                        $updatedFields[] = $key;
+                    }
+                } else {
+                    $oldValues[$key] = null;
+                    $updatedFields[] = $key;
+                }
+                
+                $newValues[$key] = $value;
+                
                 LandingPageContent::updateOrCreate(
                     [
                         'section' => 'hero',
@@ -192,6 +213,24 @@ class CmsController extends Controller
                         'content_type' => $key === 'background_image' ? 'image' : 'text',
                         'metadata' => $key === 'background_image' ? ['alt' => 'Hero Background'] : null
                     ]
+                );
+            }
+        }
+
+        // Log activity if there were changes
+        if (!empty($updatedFields)) {
+            $heroContent = LandingPageContent::where('section', 'hero')
+                ->where('key', 'title')
+                ->first();
+            
+            if ($heroContent) {
+                $fieldsText = implode(', ', $updatedFields);
+                Activity::log(
+                    'updated',
+                    $heroContent,
+                    "Updated hero: {$fieldsText}",
+                    $oldValues,
+                    $newValues
                 );
             }
         }
@@ -254,17 +293,27 @@ class CmsController extends Controller
             'experience_text' => $validated['experience_text'] ?? '',
         ];
 
+        $updatedFields = [];
+        $oldValues = [];
+        $newValues = [];
+        
         foreach ($contentUpdates as $key => $value) {
             $content = LandingPageContent::where('section', 'about')
                 ->where('key', $key)
                 ->first();
 
             if ($content) {
+                $oldValues[$key] = $content->value;
+                if ($content->value !== $value) {
+                    $updatedFields[] = $key;
+                }
                 $content->update([
                     'value' => $value,
                     'is_active' => true,
                 ]);
             } else {
+                $oldValues[$key] = null;
+                $updatedFields[] = $key;
                 LandingPageContent::create([
                     'section' => 'about',
                     'key' => $key,
@@ -275,6 +324,7 @@ class CmsController extends Controller
                     'content_type' => 'text',
                 ]);
             }
+            $newValues[$key] = $value;
         }
 
         // Handle image separately
@@ -289,6 +339,8 @@ class CmsController extends Controller
                     unlink(public_path($imageContent->value));
                 }
 
+                $oldValues['image'] = $imageContent->value;
+                $updatedFields[] = 'image';
                 $imageContent->update([
                     'value' => $imagePath,
                     'is_active' => true,
@@ -296,6 +348,8 @@ class CmsController extends Controller
                     'metadata' => ['alt' => 'About Us Image'],
                 ]);
             } else {
+                $oldValues['image'] = null;
+                $updatedFields[] = 'image';
                 LandingPageContent::create([
                     'section' => 'about',
                     'key' => 'image',
@@ -305,6 +359,25 @@ class CmsController extends Controller
                     'is_active' => true,
                     'content_type' => 'image',
                 ]);
+            }
+            $newValues['image'] = $imagePath;
+        }
+
+        // Log activity if there were changes
+        if (!empty($updatedFields)) {
+            $aboutContent = LandingPageContent::where('section', 'about')
+                ->where('key', 'title')
+                ->first();
+            
+            if ($aboutContent) {
+                $fieldsText = implode(', ', $updatedFields);
+                Activity::log(
+                    'updated',
+                    $aboutContent,
+                    "Updated about: {$fieldsText}",
+                    $oldValues,
+                    $newValues
+                );
             }
         }
 
@@ -332,6 +405,80 @@ class CmsController extends Controller
     {
         $contents = LandingPageContent::bySection('contact')->ordered()->get();
         return Inertia::render('CMS/Contact', ['contents' => $contents]);
+    }
+
+    public function updateContact(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:255',
+            'address' => 'required|string',
+        ]);
+
+        try {
+            $updatedFields = [];
+            $oldValues = [];
+            $newValues = [];
+            
+            // Update or create each contact field and track changes
+            foreach ($validated as $key => $value) {
+                $existingContent = LandingPageContent::where('section', 'contact')
+                    ->where('key', $key)
+                    ->first();
+                
+                if ($existingContent) {
+                    $oldValues[$key] = $existingContent->value;
+                    if ($existingContent->value !== $value) {
+                        $updatedFields[] = $key;
+                    }
+                } else {
+                    $oldValues[$key] = null;
+                    $updatedFields[] = $key;
+                }
+                
+                $newValues[$key] = $value;
+                
+                LandingPageContent::updateOrCreate(
+                    ['section' => 'contact', 'key' => $key],
+                    [
+                        'value' => $value,
+                        'order' => $this->getContactOrderForKey($key),
+                        'is_active' => true
+                    ]
+                );
+            }
+
+            // Log activity if there were changes
+            if (!empty($updatedFields)) {
+                $contactContent = LandingPageContent::where('section', 'contact')
+                    ->where('key', 'title')
+                    ->first();
+                
+                if ($contactContent) {
+                    $fieldsText = implode(', ', $updatedFields);
+                    Activity::log(
+                        'updated',
+                        $contactContent,
+                        "Updated contact: {$fieldsText}",
+                        $oldValues,
+                        $newValues
+                    );
+                }
+            }
+
+            return redirect()->back()->with([
+                'type' => 'success',
+                'text' => 'Contact content updated successfully!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Contact update failed: ' . $e->getMessage());
+            return redirect()->back()->with([
+                'type' => 'error',
+                'text' => 'Failed to update contact content. Please try again.'
+            ]);
+        }
     }
 
     public function navbar()
@@ -371,6 +518,28 @@ class CmsController extends Controller
 
         // fallback: place at the end of the hero section
         $max = LandingPageContent::where('section', 'hero')->max('order');
+        return $max ? $max + 1 : 1;
+    }
+
+    /**
+     * Determine a sensible order for common contact keys.
+     */
+    private function getContactOrderForKey(string $key)
+    {
+        $mapping = [
+            'title' => 1,
+            'description' => 2,
+            'email' => 3,
+            'phone' => 4,
+            'address' => 5,
+        ];
+
+        if (isset($mapping[$key])) {
+            return $mapping[$key];
+        }
+
+        // fallback: place at the end of the contact section
+        $max = LandingPageContent::where('section', 'contact')->max('order');
         return $max ? $max + 1 : 1;
     }
 }

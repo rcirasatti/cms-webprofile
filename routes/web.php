@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio');
         Route::get('/client', [ClientController::class, 'index'])->name('client');
         Route::get('/contact', [CmsController::class, 'contact'])->name('contact');
+        Route::post('/contact/update', [CmsController::class, 'updateContact'])->name('contact.update');
         Route::get('/navbar', [CmsController::class, 'navbar'])->name('navbar');
         Route::get('/footer', [CmsController::class, 'footer'])->name('footer');
         Route::get('/activities', [CmsController::class, 'activities'])->name('activities');
