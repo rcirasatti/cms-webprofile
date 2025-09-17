@@ -1,28 +1,14 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ContentForm from '@/Components/ui/ContentForm';
+import NavbarForm from './form';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 
 export default function Navbar({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
-    const [editingContent, setEditingContent] = useState(null);
-    const { delete: deleteContent } = useForm();
-
-    const handleEdit = (content) => {
-        setEditingContent(content);
-        setShowForm(true);
-    };
-
-    const handleDelete = (content) => {
-        if (confirm('Are you sure you want to delete this content?')) {
-            deleteContent(route('cms.content.destroy', content.id));
-        }
-    };
 
     const handleCloseForm = () => {
         setShowForm(false);
-        setEditingContent(null);
     };
 
     return (
@@ -32,60 +18,58 @@ export default function Navbar({ auth, contents }) {
             <div className="p-6">
                 <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900">
-                            <div className="flex justify-between items-center mb-6">
+                            <div className="flex justify-between items-center mb-4">
                                 <div>
                                     <h1 className="text-2xl font-bold text-gray-800">Navbar Section</h1>
                                     <p className="text-gray-600">Manage navigation bar and logo</p>
                                 </div>
-                                                    </div>
-
-                            <div className="space-y-4">
-                                {contents.map((content) => (
-                                    <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
-                                                        {content.key}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">Order: {content.order}</span>
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        content.is_active 
-                                                            ? 'bg-green-100 text-green-800' 
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {content.is_active ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-900 mb-2 font-medium">{content.value}</p>
-                                                {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                                    <div className="text-sm text-gray-600">
-                                                        <strong>Metadata:</strong> {JSON.stringify(content.metadata)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex space-x-2 ml-4">
-                                                <button
-                                                    onClick={() => handleEdit(content)}
-                                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(content)}
-                                                    className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                <div className="flex space-x-3">
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Edit Navbar Content
+                                    </button>
+                                </div>
                             </div>
 
+                            {contents.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <div className="text-gray-400 text-6xl mb-3">🧭</div>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-1">No navbar content yet</h3>
+                                    <p className="text-gray-600 mb-3">Get started by adding your navbar content.</p>
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Setup Navbar Content
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {/* Current Content Summary */}
+                                    <div className="bg-gray-50 rounded-lg p-3">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">📋 Current Content</h3>
+                                        <div className="grid md:grid-cols-2 gap-3">
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Logo Text:</span>
+                                                <p className="text-gray-900 mt-0.5">{contents.find(c => c.key === 'logo_text')?.value || 'Not set'}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-gray-600">Logo Image:</span>
+                                                <p className="text-gray-900 mt-0.5 text-sm break-all">
+                                                    {contents.find(c => c.key === 'logo_image')?.value || 'No image set'}
+                                                </p>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Preview Section */}
-                            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
+                            <div className="mt-6 border-t pt-4">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-3">Live Preview</h2>
                                 <div className="bg-white shadow-lg rounded-lg p-4">
                                     <nav className="flex justify-between items-center">
                                         <div className="flex items-center">
@@ -132,9 +116,8 @@ export default function Navbar({ auth, contents }) {
                 </div>
 
             {showForm && (
-                <ContentForm
-                    content={editingContent}
-                    section="navbar"
+                <NavbarForm
+                    contents={contents}
                     onCancel={handleCloseForm}
                 />
             )}

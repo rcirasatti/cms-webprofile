@@ -119,7 +119,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/contact', [CmsController::class, 'contact'])->name('contact');
         Route::post('/contact/update', [CmsController::class, 'updateContact'])->name('contact.update');
         Route::get('/navbar', [CmsController::class, 'navbar'])->name('navbar');
+        Route::post('/navbar/update', [CmsController::class, 'updateNavbar'])->name('navbar.update');
         Route::get('/footer', [CmsController::class, 'footer'])->name('footer');
+        Route::post('/footer/update', [CmsController::class, 'updateFooter'])->name('footer.update');
         Route::get('/activities', [CmsController::class, 'activities'])->name('activities');
         
         // CRUD operations

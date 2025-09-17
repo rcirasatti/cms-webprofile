@@ -15,6 +15,7 @@ const ContactSection = ({ content = [] }) => {
   const email = getContentValue('email', 'omahiot@gmail.com');
   const phone = getContentValue('phone', '+62 8127-6253-242');
   const address = getContentValue('address', 'Jl. Turus Asri IV No. 6, Bulusan, Kec. Tembalang, Kota Semarang, Jawa Tengah 50277');
+  const mapsUrl = getContentValue('maps_url', 'https://maps.app.goo.gl/eDAVoRHqWmoYPwfb6');
   return (
     <section
       id="contact"
@@ -103,9 +104,14 @@ const ContactSection = ({ content = [] }) => {
                     <p className="text-sm text-[hsl(210,72%,25%)]/60 mb-2">
                       Office Location
                     </p>
-                    <p className="text-base font-medium text-[hsl(148,41%,58%)] hover:text-[hsl(148,41%,58%)]/80 transition-all duration-300">
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-base font-medium text-[hsl(148,41%,58%)] hover:text-[hsl(148,41%,58%)]/80 transition-all duration-300 hover:underline"
+                    >
                       {address}
-                    </p>
+                    </a>
                   </div>
                 </div>
               </div>

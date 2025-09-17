@@ -108,6 +108,16 @@ export default function Contact({ auth, contents }) {
                                         <div>
                                             <h3 className="text-xl font-semibold mb-4">📍 Address</h3>
                                             <p>{contents.find(c => c.key === 'address')?.value || 'Your address here'}</p>
+                                            {contents.find(c => c.key === 'maps_url')?.value && (
+                                                <a 
+                                                    href={contents.find(c => c.key === 'maps_url')?.value}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-sm text-blue-400 hover:underline block mt-2"
+                                                >
+                                                    🗺️ Open in Google Maps
+                                                </a>
+                                            )}
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-semibold mb-4">📧 Email</h3>
@@ -118,6 +128,11 @@ export default function Contact({ auth, contents }) {
                                             <p>{contents.find(c => c.key === 'phone')?.value || '+1 234 567 8900'}</p>
                                         </div>
                                     </div>
+                                    <div className="mt-6 text-center">
+                                        <p className="text-gray-300">
+                                            {contents.find(c => c.key === 'description')?.value || 'Contact description here'}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -125,7 +140,9 @@ export default function Contact({ auth, contents }) {
                             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
                                 <div className="text-sm text-blue-700 space-y-1">
-                                    <p><strong>Common keys:</strong> title, address, email, phone, hours, map_embed</p>
+                                    <p><strong>Common keys:</strong> title, description, address, email, phone, maps_url, maps_embed</p>
+                                    <p><strong>maps_url:</strong> Direct link to Google Maps (for "Open in Google Maps" button)</p>
+                                    <p><strong>maps_embed:</strong> Embedded Google Maps iframe URL</p>
                                     <p><strong>Tip:</strong> Use descriptive keys that identify the type of contact information</p>
                                 </div>
                             </div>

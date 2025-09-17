@@ -2,28 +2,25 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import Alert from '../../../Components/ui/Alert';
 
-export default function HeroForm({ contents, onCancel }) {
+export default function NavbarForm({ contents, onCancel }) {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-    const initialImage =
-        contents.find((c) => c.key === "background_image")?.value || "";
-    const { data, setData, post, patch, processing, errors, reset } = useForm({
-        title: contents.find((c) => c.key === "title")?.value || "",
-        subtitle: contents.find((c) => c.key === "subtitle")?.value || "",
-        button_text: contents.find((c) => c.key === "button_text")?.value || "",
-        background_image: initialImage,
+    const initialLogoImage =
+        contents.find((c) => c.key === "logo_image")?.value || "";
+    const { data, setData, post, processing, errors } = useForm({
+        logo_text: contents.find((c) => c.key === "logo_text")?.value || "",
+        logo_image: initialLogoImage,
     });
 
-    const [previewUrl, setPreviewUrl] = useState(initialImage);
+    const [previewUrl, setPreviewUrl] = useState(initialLogoImage);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Use useForm.post so Inertia will automatically send multipart/form-data
-        post(route("cms.hero.update"), {
+        post(route("cms.navbar.update"), {
             onSuccess: () => {
-                setAlertMessage("Hero content updated successfully!");
+                setAlertMessage("Navbar content updated successfully!");
                 setShowSuccess(true);
                 setTimeout(() => {
                     onCancel();
@@ -66,7 +63,7 @@ export default function HeroForm({ contents, onCancel }) {
                 <div className="mt-3">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-xl font-medium text-gray-900">
-                            Edit Hero Content
+                            Edit Navbar Content
                         </h3>
                         <button
                             onClick={onCancel}
@@ -77,60 +74,35 @@ export default function HeroForm({ contents, onCancel }) {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Main Content */}
+                        {/* Logo Content */}
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <h4 className="text-lg font-semibold text-blue-800 mb-3">
-                                🎯 Main Content
+                                🧭 Logo & Branding
                             </h4>
                             <div className="grid md:grid-cols-2 gap-4">
-                                <div className="md:col-span-2">
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Title
+                                        Logo Text
                                     </label>
                                     <input
                                         type="text"
-                                        value={data.title}
+                                        value={data.logo_text}
                                         onChange={(e) =>
-                                            setData("title", e.target.value)
+                                            setData("logo_text", e.target.value)
                                         }
                                         className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Welcome to OmahIoT"
+                                        placeholder="Your Company Name"
                                     />
+                                    {errors.logo_text && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                            {errors.logo_text}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Subtitle
-                                    </label>
-                                    <textarea
-                                        value={data.subtitle}
-                                        onChange={(e) =>
-                                            setData("subtitle", e.target.value)
-                                        }
-                                        rows={3}
-                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Smart IoT Solutions for Modern Living"
-                                    />
-                                </div>
+                                
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Button Text
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={data.button_text}
-                                        onChange={(e) =>
-                                            setData(
-                                                "button_text",
-                                                e.target.value
-                                            )
-                                        }
-                                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Explore Solutions"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Background Image (file upload)
+                                        Logo Image (file upload)
                                     </label>
                                     <input
                                         type="file"
@@ -140,7 +112,7 @@ export default function HeroForm({ contents, onCancel }) {
                                                 e.target.files &&
                                                 e.target.files[0];
                                             setData(
-                                                "background_image",
+                                                "logo_image",
                                                 file || ""
                                             );
                                             if (file) {
@@ -149,12 +121,17 @@ export default function HeroForm({ contents, onCancel }) {
                                                 setPreviewUrl(url);
                                             } else {
                                                 setPreviewUrl(
-                                                    initialImage || ""
+                                                    initialLogoImage || ""
                                                 );
                                             }
                                         }}
                                         className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                     />
+                                    {errors.logo_image && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                            {errors.logo_image}
+                                        </p>
+                                    )}
 
                                     {previewUrl ? (
                                         <div className="mt-2">
@@ -163,18 +140,20 @@ export default function HeroForm({ contents, onCancel }) {
                                             </p>
                                             <img
                                                 src={previewUrl}
-                                                alt="preview"
-                                                className="w-full max-w-xs rounded-md"
+                                                alt="Logo preview"
+                                                className="w-full max-w-xs max-h-24 object-contain rounded-md border"
                                             />
                                         </div>
                                     ) : (
                                         <p className="text-xs text-gray-400 mt-2">
-                                            No image selected
+                                            No logo image selected
                                         </p>
                                     )}
                                 </div>
                             </div>
                         </div>
+
+                       
 
                         {/* Form Actions */}
                         <div className="flex justify-end space-x-3 pt-4 border-t">

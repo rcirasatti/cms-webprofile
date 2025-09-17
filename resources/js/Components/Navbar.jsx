@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const Navbar = ({ content = {} }) => {
+const Navbar = ({ content = [] }) => {
   const [activeSection, setActiveSection] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Helper function to get content value by key
   const getContentValue = (key, defaultValue = '') => {
-    const contentArray = content.navbar || [];
+    const contentArray = content;
     const item = contentArray.find(item => item.key === key);
     return item ? item.value : defaultValue;
   };

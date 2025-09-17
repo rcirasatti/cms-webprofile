@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    Facebook,
     Github,
     Instagram,
     Linkedin,
@@ -10,12 +9,12 @@ import {
     Youtube,
 } from "lucide-react";
 
-const Footer = ({ content = {} }) => {
+const Footer = ({ content = [] }) => {
     const currentYear = new Date().getFullYear();
 
     // Helper function to get content value by key
     const getContentValue = (key, defaultValue = "") => {
-        const contentArray = content.footer || []; // This should be the array from landing_page_contents
+        const contentArray = Array.isArray(content) ? content : []; // content is already the footer array
         const item = contentArray.find((item) => item.key === key);
         return item ? item.value : defaultValue;
     };
@@ -24,7 +23,6 @@ const Footer = ({ content = {} }) => {
         "copyright",
         `© ${currentYear} OmahIoT. All rights reserved.`
     );
-    const socialFacebook = getContentValue("social_facebook", "");
     const socialInstagram = getContentValue(
         "social_instagram",
         "https://www.instagram.com/omahiot/"
@@ -119,15 +117,6 @@ const Footer = ({ content = {} }) => {
                                     aria-label="YouTube"
                                 >
                                     <Youtube className="w-5 h-5" />
-                                </a>
-                            )}
-                            {socialFacebook && (
-                                <a
-                                    href={socialFacebook}
-                                    className="text-white/60 hover:text-white transition-all duration-300 hover:scale-110 transform"
-                                    aria-label="Facebook"
-                                >
-                                    <Facebook className="w-5 h-5" />
                                 </a>
                             )}
                         </div>

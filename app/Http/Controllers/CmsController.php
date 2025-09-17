@@ -133,7 +133,19 @@ class CmsController extends Controller
             $validated['value'] = $validated['image_path']; // Set value to image path for compatibility
         }
 
+        // Store old values for activity logging
+        $oldValues = $content->only(['section', 'key', 'value', 'image_path', 'is_active']);
+        
         $content->update($validated);
+
+        // Log activity
+        $newValues = $content->fresh()->only(['section', 'key', 'value', 'image_path', 'is_active']);
+        $changedFields = array_keys(array_diff_assoc($newValues, $oldValues));
+        
+        if (!empty($changedFields)) {
+            $fieldsText = implode(', ', $changedFields);
+            Activity::log('updated', $content, "Updated content: {$fieldsText}", $oldValues, $newValues);
+        }
 
         return redirect()->back()->with('success', 'Content updated successfully!');
     }
@@ -487,10 +499,179 @@ class CmsController extends Controller
         return Inertia::render('CMS/Navigation/navbar', ['contents' => $contents]);
     }
 
+    public function updateNavbar(Request $request)
+    {
+        $request->validate([
+            'logo_text' => 'nullable|string|max:255',
+            'logo_image' => 'nullable',
+        ]);
+
+        // Handle logo image upload
+        $logoImageValue = $request->logo_image;
+        if ($request->hasFile('logo_image')) {
+            $image = $request->file('logo_image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/uploads'), $imageName);
+            $logoImageValue = '/assets/images/uploads/' . $imageName;
+        }
+
+        $data = [
+            'logo_text' => $request->logo_text,
+            'logo_image' => $logoImageValue,
+        ];
+
+        $updatedFields = [];
+        $oldValues = [];
+        $newValues = [];
+
+        // Update or create each content item and track changes
+        foreach ($data as $key => $value) {
+            if ($value !== null && $value !== '') {
+                $existingContent = LandingPageContent::where('section', 'navbar')
+                    ->where('key', $key)
+                    ->first();
+                
+                if ($existingContent) {
+                    $oldValues[$key] = $existingContent->value;
+                    if ($existingContent->value !== $value) {
+                        $updatedFields[] = $key;
+                    }
+                } else {
+                    $oldValues[$key] = null;
+                    $updatedFields[] = $key;
+                }
+                
+                $newValues[$key] = $value;
+                
+                LandingPageContent::updateOrCreate(
+                    [
+                        'section' => 'navbar',
+                        'key' => $key
+                    ],
+                    [
+                        'value' => $value,
+                        'is_active' => true,
+                        'order' => $this->getOrderForNavbarKey($key),
+                        'content_type' => $key === 'logo_image' ? 'image' : 'text',
+                        'metadata' => $key === 'logo_image' ? ['alt' => 'Company Logo'] : null
+                    ]
+                );
+            }
+        }
+
+        // Log activity if there were changes
+        if (!empty($updatedFields)) {
+            $navbarContent = LandingPageContent::where('section', 'navbar')
+                ->where('key', 'logo_text')
+                ->first();
+            
+            if ($navbarContent) {
+                $fieldsText = implode(', ', $updatedFields);
+                Activity::log(
+                    'updated',
+                    $navbarContent,
+                    "Updated navbar: {$fieldsText}",
+                    $oldValues,
+                    $newValues
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Navbar content updated successfully!');
+    }
+
     public function footer()
     {
         $contents = LandingPageContent::bySection('footer')->ordered()->get();
-        return Inertia::render('CMS/Navigation/footer', ['contents' => $contents]);
+        return Inertia::render('CMS/Navigation/footer', [
+            'contents' => $contents,
+            'flash' => session()->only(['type', 'text'])
+        ]);
+    }
+
+    public function updateFooter(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'copyright' => 'nullable|string',
+                'tagline' => 'nullable|string',
+                'address' => 'nullable|string',
+                'phone' => 'nullable|string',
+                'email' => 'nullable|string|email',
+                'social_facebook' => 'nullable|url',
+                'social_instagram' => 'nullable|url', 
+                'social_linkedin' => 'nullable|url',
+                'social_youtube' => 'nullable|url',
+                'maps_url' => 'nullable|url',
+                'maps_embed' => 'nullable|string',
+            ]);
+
+            $oldValues = [];
+            $newValues = [];
+            $updatedFields = [];
+
+            foreach ($validated as $key => $value) {
+                $existing = LandingPageContent::where('section', 'footer')
+                    ->where('key', $key)
+                    ->first();
+
+                if ($existing && $existing->value !== $value) {
+                    $oldValues[$key] = $existing->value;
+                    $updatedFields[] = $key;
+                } elseif (!$existing && !empty($value)) {
+                    $oldValues[$key] = null;
+                    $updatedFields[] = $key;
+                }
+                
+                $newValues[$key] = $value;
+
+                // Handle social media metadata
+                $metadata = null;
+                if (str_starts_with($key, 'social_')) {
+                    $platform = str_replace('social_', '', $key);
+                    $metadata = ['platform' => $platform];
+                }
+                
+                LandingPageContent::updateOrCreate(
+                    ['section' => 'footer', 'key' => $key],
+                    [
+                        'value' => $value,
+                        'metadata' => $metadata,
+                        'order' => $this->getFooterOrderForKey($key),
+                        'is_active' => true
+                    ]
+                );
+            }
+
+            // Log activity if there were changes
+            if (!empty($updatedFields)) {
+                $footerContent = LandingPageContent::where('section', 'footer')
+                    ->where('key', 'copyright')
+                    ->first();
+                
+                if ($footerContent) {
+                    $fieldsText = implode(', ', $updatedFields);
+                    Activity::log(
+                        'updated',
+                        $footerContent,
+                        "Updated footer: {$fieldsText}",
+                        $oldValues,
+                        $newValues
+                    );
+                }
+            }
+
+            return redirect()->back()->with([
+                'type' => 'success',
+                'text' => 'Footer content updated successfully!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Footer update failed: ' . $e->getMessage());
+            return redirect()->back()->with([
+                'type' => 'error',
+                'text' => 'Failed to update footer content. Please try again.'
+            ]);
+        }
     }
 
     public function activities()
@@ -524,6 +705,25 @@ class CmsController extends Controller
     /**
      * Determine a sensible order for common contact keys.
      */
+    private function getOrderForNavbarKey(string $key)
+    {
+        $mapping = [
+            'logo_text' => 1,
+            'logo_image' => 2,
+        ];
+
+        if (isset($mapping[$key])) {
+            return $mapping[$key];
+        }
+
+        // fallback: place at the end of the navbar section
+        $max = LandingPageContent::where('section', 'navbar')->max('order');
+        return $max ? $max + 1 : 1;
+    }
+
+    /**
+     * Determine a sensible order for common contact keys.
+     */
     private function getContactOrderForKey(string $key)
     {
         $mapping = [
@@ -532,6 +732,8 @@ class CmsController extends Controller
             'email' => 3,
             'phone' => 4,
             'address' => 5,
+            'maps_url' => 6,
+            'maps_embed' => 7,
         ];
 
         if (isset($mapping[$key])) {
@@ -540,6 +742,34 @@ class CmsController extends Controller
 
         // fallback: place at the end of the contact section
         $max = LandingPageContent::where('section', 'contact')->max('order');
+        return $max ? $max + 1 : 1;
+    }
+
+    /**
+     * Determine a sensible order for common footer keys.
+     */
+    private function getFooterOrderForKey(string $key)
+    {
+        $mapping = [
+            'copyright' => 1,
+            'tagline' => 2,
+            'address' => 3,
+            'phone' => 4,
+            'email' => 5,
+            'social_facebook' => 6,
+            'social_instagram' => 7,
+            'social_linkedin' => 8,
+            'social_youtube' => 9,
+            'maps_url' => 10,
+            'maps_embed' => 11,
+        ];
+
+        if (isset($mapping[$key])) {
+            return $mapping[$key];
+        }
+
+        // fallback: place at the end of the footer section
+        $max = LandingPageContent::where('section', 'footer')->max('order');
         return $max ? $max + 1 : 1;
     }
 }

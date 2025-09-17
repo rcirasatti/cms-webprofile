@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import FooterForm from './FooterForm';
-import { Head } from '@inertiajs/react';
+import ContentForm from '@/Components/ui/ContentForm';
+import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 
 export default function Footer({ auth, contents, flash }) {
     const [showForm, setShowForm] = useState(false);
+    const [editingContent, setEditingContent] = useState(null);
     const { delete: deleteContent } = useForm();
+
+    const handleEdit = (content) => {
+        setEditingContent(content);
+        setShowForm(true);
+    };
+
+    const handleDelete = (content) => {
+        if (confirm('Are you sure you want to delete this content?')) {
+            deleteContent(route('cms.content.destroy', content.id));
+        }
+    };
 
     const handleCloseForm = () => {
         setShowForm(false);
+        setEditingContent(null);
     };
 
     const socialItems = contents.filter(content => content.key.startsWith('social_'));
@@ -37,12 +50,18 @@ export default function Footer({ auth, contents, flash }) {
                                 <h1 className="text-2xl font-bold text-gray-800">Footer Section</h1>
                                 <p className="text-gray-600">Manage footer content, social media links, and contact information</p>
                             </div>
-                            <div>
+                            <div className="flex space-x-3">
+                                <Link
+                                    href={route('cms.sections')}
+                                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                >
+                                    ← Back to Sections
+                                </Link>
                                 <button
                                     onClick={() => setShowForm(true)}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 >
-                                    Edit Footer Content
+                                    Add Footer Content
                                 </button>
                             </div>
                         </div>
@@ -107,6 +126,57 @@ export default function Footer({ auth, contents, flash }) {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Individual Content Items */}
+                                <div className="space-y-3 mb-6">
+                                    <h3 className="text-lg font-semibold text-gray-800">📝 All Content Items</h3>
+                                    {contents.map((content) => (
+                                        <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center space-x-2 mb-2">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {content.key}
+                                                        </span>
+                                                        <span className="text-sm text-gray-500">Order: {content.order}</span>
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                            content.is_active 
+                                                                ? 'bg-green-100 text-green-800' 
+                                                                : 'bg-red-100 text-red-800'
+                                                        }`}>
+                                                            {content.is_active ? 'Active' : 'Inactive'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-gray-900 mb-2 font-medium">
+                                                        {content.value?.length > 100 
+                                                            ? content.value.substring(0, 100) + '...'
+                                                            : content.value || 'No value set'
+                                                        }
+                                                    </p>
+                                                    {content.metadata && Object.keys(content.metadata).length > 0 && (
+                                                        <div className="text-sm text-gray-600">
+                                                            <strong>Metadata:</strong> {JSON.stringify(content.metadata)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex space-x-2 ml-4">
+                                                    <button
+                                                        onClick={() => handleEdit(content)}
+                                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(content)}
+                                                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </>
                         )}
 
@@ -156,6 +226,7 @@ export default function Footer({ auth, contents, flash }) {
                                                     rel="noopener noreferrer"
                                                     title={social.metadata?.platform || 'Social Link'}
                                                 >
+                                                    {social.metadata?.platform === 'facebook' && '📘'}
                                                     {social.metadata?.platform === 'instagram' && '📷'}
                                                     {social.metadata?.platform === 'twitter' && '🐦'}
                                                     {social.metadata?.platform === 'linkedin' && '💼'}
@@ -198,8 +269,8 @@ export default function Footer({ auth, contents, flash }) {
                             <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
                             <div className="text-sm text-blue-700 space-y-1">
                                 <p><strong>Keys:</strong> copyright, tagline, address, phone, email, maps_url, maps_embed</p>
-                                <p><strong>Social Keys:</strong> social_instagram, social_linkedin, social_youtube</p>
-                                <p><strong>Metadata:</strong> {"{"}"platform": "instagram"{"}"}</p>
+                                <p><strong>Social Keys:</strong> social_facebook, social_instagram, social_linkedin, social_youtube</p>
+                                <p><strong>Metadata:</strong> {"{"}"platform": "facebook"{"}"}</p>
                                 <p><strong>Tip:</strong> Use social_* pattern for social media links</p>
                             </div>
                         </div>
@@ -208,8 +279,9 @@ export default function Footer({ auth, contents, flash }) {
             </div>
 
             {showForm && (
-                <FooterForm
-                    contents={contents}
+                <ContentForm
+                    content={editingContent}
+                    section="footer"
                     onCancel={handleCloseForm}
                 />
             )}
