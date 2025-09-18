@@ -23,7 +23,12 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <Head title="Log in" />
+            <Head title="Login - OmahIoT CMS" />
+
+            <div className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome Back!</h2>
+                <p className="text-gray-600">Sign in to your OmahIoT CMS account</p>
+            </div>
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">

@@ -10,11 +10,6 @@ use Inertia\Inertia;
 
 class CmsController extends Controller
 {
-    public function dashboard()
-    {
-        return Inertia::render('Dashboard');
-    }
-
     public function sections()
     {
         $sections = LandingPageContent::select('section')
@@ -33,7 +28,7 @@ class CmsController extends Controller
             ->ordered()
             ->get();
 
-        return Inertia::render('CMS/SectionContent', [
+        return Inertia::render('CMS/General/sections', [
             'section' => $section,
             'contents' => $contents
         ]);
@@ -410,13 +405,13 @@ class CmsController extends Controller
     public function portfolio()
     {
         $contents = LandingPageContent::bySection('portfolio')->ordered()->get();
-        return Inertia::render('CMS/PortfolioTable', ['contents' => $contents]);
+        return Inertia::render('CMS/Portfolio/table', ['contents' => $contents]);
     }
 
     public function contact()
     {
         $contents = LandingPageContent::bySection('contact')->ordered()->get();
-        return Inertia::render('CMS/Contact', ['contents' => $contents]);
+        return Inertia::render('CMS/Contact/index', ['contents' => $contents]);
     }
 
     public function updateContact(Request $request)

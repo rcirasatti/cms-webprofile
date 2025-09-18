@@ -1,6 +1,6 @@
 import React from "react";
 
-const AboutSection = ({ content = {} }) => {
+const AboutSection = ({ content = {}, isPreview = false }) => {
     // Helper function to get content value by key
     const getContentValue = (key, defaultValue = '') => {
         const item = content.find(item => item.key === key);
@@ -23,28 +23,28 @@ const AboutSection = ({ content = {} }) => {
 return (
     <section
       id="about"
-      className="py-24 bg-gradient-to-b from-[hsl(146,51%,91%)] via-white to-[hsl(146,51%,91%)] relative overflow-hidden"
+      className={`${isPreview ? 'py-8' : 'py-24'} bg-gradient-to-b from-[hsl(146,51%,91%)] via-white to-[hsl(146,51%,91%)] relative overflow-hidden`}
     >
       <div className="absolute inset-0">
         <div className="absolute inset-0 opacity-[0.03] pattern-grid [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
       </div>
 
       <div className="container mx-auto relative">
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <div className={`max-w-3xl mx-auto text-center ${isPreview ? 'mb-8' : 'mb-16'}`}>
           <div className="relative inline-block mb-4">
             <div className="absolute -inset-4 bg-gradient-to-r from-[hsl(148,41%,58%)]/20 via-[hsl(210,72%,25%)]/20 to-[hsl(148,41%,58%)]/20 rounded-2xl blur-lg opacity-60"></div>
-            <h2 className="text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] leading-tight">
+            <h2 className={`${isPreview ? 'text-3xl md:text-4xl' : 'text-5xl md:text-6xl'} font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] leading-tight`}>
               {title}
             </h2>
             {/* Decorative underline */}
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[hsl(148,41%,58%)] to-[hsl(210,72%,25%)] rounded-full"></div>
           </div>
-          <p className="text-lg leading-relaxed mt-6 text-[hsl(210,72%,25%)]/80 max-w-2xl mx-auto">
+          <p className={`${isPreview ? 'text-base' : 'text-lg'} leading-relaxed mt-6 text-[hsl(210,72%,25%)]/80 max-w-2xl mx-auto`}>
             {description}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10 items-center max-w-4xl mx-auto">
+        <div className={`grid md:grid-cols-2 gap-10 items-center max-w-4xl mx-auto ${isPreview ? 'px-4' : ''}`}>
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-[hsl(148,41%,58%)] text-center md:text-left">
               {featuresTitle}

@@ -71,9 +71,9 @@ export default function SidebarLayout({ children }) {
 
                             <div className="flex items-center">
                                 <Link href="/" className="flex items-center">
-                                    <ApplicationLogo className="w-8 h-8" />
+                                    <ApplicationLogo className="w-8 h-8 text-green-600" />
                                     <span className="ml-2 text-xl font-bold text-gray-800">
-                                        CMS Admin
+                                        OmahIoT CMS
                                     </span>
                                 </Link>
                             </div>

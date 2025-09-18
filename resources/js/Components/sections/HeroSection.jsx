@@ -1,6 +1,6 @@
 import React from "react";
 
-const HeroSection = ({ handleExploreClick, content = [] }) => {
+const HeroSection = ({ handleExploreClick, content = [], isPreview = false }) => {
     // Helper to read value whether `content` is an array of {key,value} or an object
     const getValue = (key, altKey) => {
         if (Array.isArray(content)) {
@@ -21,7 +21,7 @@ const HeroSection = ({ handleExploreClick, content = [] }) => {
 return (
     <section
     id="home"
-    className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)]/20 to-[hsl(146,51%,91%)] pt-16"
+    className={`relative ${isPreview ? 'h-full' : 'min-h-screen'} flex items-center justify-center overflow-hidden bg-gradient-to-br from-[hsl(210,72%,25%)] via-[hsl(148,41%,58%)]/20 to-[hsl(146,51%,91%)] ${isPreview ? '' : 'pt-16'}`}
     >
     <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(60, 100%, 10%)]/60 via-[hsl(148,41%,58%)]/30 to-[hsl(146,51%,91%)]/80"></div>
@@ -30,13 +30,13 @@ return (
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(210,72%,25%)]/30 rounded-full mix-blend-multiply filter blur-[128px] animate-float"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[hsl(146,51%,91%)]/20 rounded-full mix-blend-multiply filter blur-[128px] animate-float-delayed"></div>
         </div>
-        <div className="absolute inset-0 bg-[url('/assets/images/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-20"></div>
     </div>
 
     <div className="container mx-auto px-4 text-center relative z-10">
         <div className="space-y-8 animate-fade-in">
         <div className="relative inline-block">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white drop-shadow-lg">
+            <h1 className={`${isPreview ? 'text-2xl md:text-3xl' : 'text-5xl md:text-7xl'} font-bold tracking-tight text-white drop-shadow-lg`}>
             {title.includes('OmahIoT') ? (
                 <>
                 {title.replace('OmahIoT', '').trim()}{" "}
@@ -52,7 +52,7 @@ return (
             </h1>
         </div>
 
-        <p className="text-xl md:text-2xl font-medium mb-8 max-w-3xl mx-auto text-white/90 animate-fade-in-delay-1 leading-relaxed drop-shadow-md">
+        <p className={`${isPreview ? 'text-base md:text-lg' : 'text-xl md:text-2xl'} font-medium mb-8 max-w-3xl mx-auto text-white/90 animate-fade-in-delay-1 leading-relaxed drop-shadow-md`}>
             {subtitle}
         </p>
 

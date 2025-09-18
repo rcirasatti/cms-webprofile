@@ -59,21 +59,25 @@ export default function NavbarForm({ contents, onCancel }) {
                 />
             )}
 
-            <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">
-                <div className="mt-3">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-medium text-gray-900">
-                            Edit Navbar Content
-                        </h3>
-                        <button
-                            onClick={onCancel}
-                            className="text-gray-400 hover:text-gray-600 text-2xl"
-                        >
-                            ×
-                        </button>
+            <div className="flex items-center justify-center min-h-full p-4">
+                <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <div className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-medium text-gray-900">
+                                Edit Navbar Content
+                            </h3>
+                            <button
+                                onClick={onCancel}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
                         {/* Logo Content */}
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <h4 className="text-lg font-semibold text-blue-800 mb-3">

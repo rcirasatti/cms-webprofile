@@ -19,7 +19,7 @@ const ClientsSection = ({ content = {} }) => {
     <section id="clients" className="py-24 bg-gradient-to-br from-[hsl(146,51%,91%)] via-white to-[hsl(146,51%,91%)] relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.05]">
-        <div className="absolute inset-0 bg-[url('''/LandingPage-OmahIot/grid.svg''')] bg-center [mask-image:radial-gradient(white,transparent_80%)]"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_80%)]"></div>
       </div>
       <div className="absolute w-full h-full opacity-30">
         <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(148,41%,58%)]/20 rounded-full mix-blend-multiply filter blur-[100px] animate-float-slow"></div>

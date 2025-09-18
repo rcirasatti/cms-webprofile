@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
 import NavbarForm from './form';
+import Navbar from '@/Components/Navbar';
 import { Head, Link } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 
-export default function Navbar({ auth, contents }) {
+export default function NavbarCMS({ auth, contents }) {
     const [showForm, setShowForm] = useState(false);
 
     const handleCloseForm = () => {
@@ -48,16 +49,16 @@ export default function Navbar({ auth, contents }) {
                             ) : (
                                 <div className="space-y-4">
                                     {/* Current Content Summary */}
-                                    <div className="bg-gray-50 rounded-lg p-3">
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">📋 Current Content</h3>
-                                        <div className="grid md:grid-cols-2 gap-3">
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-3">📋 Current Content</h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
                                             <div>
                                                 <span className="text-sm font-medium text-gray-600">Logo Text:</span>
-                                                <p className="text-gray-900 mt-0.5">{contents.find(c => c.key === 'logo_text')?.value || 'Not set'}</p>
+                                                <p className="text-gray-900 mt-1">{contents.find(c => c.key === 'logo_text')?.value || 'Not set'}</p>
                                             </div>
                                             <div>
                                                 <span className="text-sm font-medium text-gray-600">Logo Image:</span>
-                                                <p className="text-gray-900 mt-0.5 text-sm break-all">
+                                                <p className="text-gray-900 mt-1 text-sm break-all">
                                                     {contents.find(c => c.key === 'logo_image')?.value || 'No image set'}
                                                 </p>
                                             </div>
@@ -68,49 +69,14 @@ export default function Navbar({ auth, contents }) {
                             )}
 
                             {/* Preview Section */}
-                            <div className="mt-6 border-t pt-4">
+                            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
                                 <h2 className="text-lg font-semibold text-gray-800 mb-3">Live Preview</h2>
-                                <div className="bg-white shadow-lg rounded-lg p-4">
-                                    <nav className="flex justify-between items-center">
-                                        <div className="flex items-center">
-                                            <div className="w-8 h-8 bg-gray-200 rounded mr-3 flex items-center justify-center">
-                                                {contents.find(c => c.key === 'logo_image')?.value ? (
-                                                    <img 
-                                                        src={contents.find(c => c.key === 'logo_image').value} 
-                                                        alt="Logo"
-                                                        className="w-full h-full object-cover rounded"
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            e.target.nextElementSibling.style.display = 'block';
-                                                        }}
-                                                    />
-                                                ) : null}
-                                                <span className="text-xs text-gray-500">Logo</span>
-                                            </div>
-                                            <span className="text-xl font-bold text-gray-800">
-                                                {contents.find(c => c.key === 'logo_text')?.value || 'Your Company'}
-                                            </span>
-                                        </div>
-                                        <div className="hidden md:flex space-x-8">
-                                            <a href="#" className="text-gray-600 hover:text-blue-600">Home</a>
-                                            <a href="#" className="text-gray-600 hover:text-blue-600">About</a>
-                                            <a href="#" className="text-gray-600 hover:text-blue-600">Projects</a>
-                                            <a href="#" className="text-gray-600 hover:text-blue-600">Portfolio</a>
-                                            <a href="#" className="text-gray-600 hover:text-blue-600">Contact</a>
-                                        </div>
-                                    </nav>
+                                <div className="bg-gray-100 rounded-lg overflow-hidden border shadow-sm">
+                                    <Navbar content={contents} isPreview={true} />
                                 </div>
                             </div>
 
-                            {/* Content Guide */}
-                            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
-                                <div className="text-sm text-blue-700 space-y-1">
-                                    <p><strong>Common keys:</strong> logo_text, logo_image, menu_item_1, menu_item_2</p>
-                                    <p><strong>Logo metadata:</strong> {"{"}"alt": "Company Logo", "width": "32", "height": "32"{"}"}</p>
-                                    <p><strong>Tip:</strong> Use logo_text for text logo and logo_image for image logo</p>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

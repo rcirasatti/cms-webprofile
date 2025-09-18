@@ -51,54 +51,54 @@ export default function DashboardWithSidebar({ stats = {} }) {
     const recentActivities = actualStats.recentActivities.length > 0
         ? actualStats.recentActivities.slice(0, 3)
         : [
-            { action: 'Welcome to CMS Dashboard', time: 'Just now', icon: '🎉' },
-            { action: 'System initialized successfully', time: 'Today', icon: '⚙️' },
+            { action: 'Welcome to OmahIoT CMS Dashboard', time: 'Just now', icon: '�' },
+            { action: 'Smart home system initialized', time: 'Today', icon: '⚙️' },
         ];
 
     const sections = [
         {
             name: 'Portfolios',
             route: 'cms.portfolio',
-            description: 'Manage portfolio items and case studies',
+            description: 'Showcase IoT projects and smart home solutions',
             icon: '🖼️',
-            color: 'bg-blue-500',
+            color: 'bg-green-500',
         },
         {
             name: 'Projects',
             route: 'cms.project',
-            description: 'Showcase projects and achievements',
-            icon: '�',
-            color: 'bg-green-500',
+            description: 'Manage smart home and IoT implementations',
+            icon: '🏠',
+            color: 'bg-blue-500',
         },
         {
             name: 'Clients',
             route: 'cms.client',
-            description: 'Manage client logos and partnerships',
+            description: 'Track client partnerships and collaborations',
             icon: '🤝',
             color: 'bg-purple-500',
         },
         {
             name: 'Content',
             route: 'cms.sections',
-            description: 'Edit website content and sections',
-            icon: '�',
-            color: 'bg-yellow-500',
+            description: 'Edit website content and system information',
+            icon: '📝',
+            color: 'bg-orange-500',
         },
     ];
 
     return (
         <SidebarLayout>
-            <Head title="Dashboard" />
+            <Head title="Dashboard - OmahIoT CMS" />
 
             {/* Welcome Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 mb-6 text-white">
+            <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg p-6 mb-6 text-white">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">Welcome back! 👋</h1>
-                        <p className="text-blue-100">Here's what's happening with your CMS today.</p>
+                        <h1 className="text-3xl font-bold mb-2">Welcome to OmahIoT! 🏠</h1>
+                        <p className="text-green-100">Manage your smart home content and IoT systems dashboard.</p>
                     </div>
                     <div className="hidden md:block">
-                        <div className="text-6xl opacity-20">📊</div>
+                        <div className="text-6xl opacity-20">🏡</div>
                     </div>
                 </div>
             </div>

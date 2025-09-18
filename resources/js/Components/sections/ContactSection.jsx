@@ -1,8 +1,10 @@
 import React from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 
-const ContactSection = ({ content = [] }) => {
+const ContactSection = ({ content = [], isPreview = false }) => {
   
+  // Debug log
+  console.log('ContactSection rendered with:', { content, isPreview });
   // Helper function to get content value by key
   const getContentValue = (key, defaultValue = '') => {
     const item = content.find(item => item.key === key);
@@ -19,26 +21,26 @@ const ContactSection = ({ content = [] }) => {
   return (
     <section
       id="contact"
-      className="py-20 bg-gradient-to-br from-[hsl(146,51%,91%)] to-white relative overflow-hidden"
+      className={`${isPreview ? 'py-8' : 'py-20'} bg-gradient-to-br from-[hsl(146,51%,91%)] to-white relative overflow-hidden`}
     >
       {/* Background decoration */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[url('''/LandingPage-OmahIot/grid.svg''')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-[0.03]"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-[0.03]"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative">
-        <div className="max-w-xl mx-auto text-center mb-16">
-          <h2 className="text-4xl font-bold mb-6 text-[hsl(210,72%,25%)]">{title}</h2>
-          <p className="text-lg text-[hsl(210,72%,25%)]/80 leading-relaxed">
+      <div className={`container mx-auto ${isPreview ? 'px-2' : 'px-4'} relative`}>
+        <div className={`max-w-xl mx-auto text-center ${isPreview ? 'mb-8' : 'mb-16'}`}>
+          <h2 className={`${isPreview ? 'text-2xl md:text-3xl' : 'text-4xl'} font-bold mb-6 text-[hsl(210,72%,25%)]`}>{title}</h2>
+          <p className={`${isPreview ? 'text-base' : 'text-lg'} text-[hsl(210,72%,25%)]/80 leading-relaxed`}>
             {subtitle}
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className={`max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 ${isPreview ? 'gap-4' : 'gap-8'}`}>
           {/* Left: Contact Info */}
-          <div className="flex flex-col gap-4">
+          <div className={`flex flex-col ${isPreview ? 'gap-2' : 'gap-4'}`}>
             {/* Email Card */}
-            <div className="group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] h-[150px]">
+            <div className={`group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] ${isPreview ? 'h-[120px]' : 'h-[150px]'}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(148,41%,58%)]/20 via-[hsl(148,41%,58%)]/20 to-[hsl(210,72%,25%)]/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative bg-white/80 backdrop-blur-sm p-4 rounded-xl h-full flex items-center border border-[hsl(146,51%,91%)]/50">
                 <div className="flex items-center space-x-4 w-full">
@@ -64,7 +66,7 @@ const ContactSection = ({ content = [] }) => {
             </div>
 
             {/* Phone Card */}
-            <div className="group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] h-[150px]">
+            <div className={`group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] ${isPreview ? 'h-[120px]' : 'h-[150px]'}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(148,41%,58%)]/20 via-[hsl(148,41%,58%)]/20 to-[hsl(210,72%,25%)]/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative bg-white/80 backdrop-blur-sm p-4 rounded-xl h-full flex items-center border border-[hsl(146,51%,91%)]/50">
                 <div className="flex items-center space-x-4 w-full">
@@ -90,7 +92,7 @@ const ContactSection = ({ content = [] }) => {
             </div>
 
             {/* Location Card */}
-            <div className="group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] h-[175px]">
+            <div className={`group relative bg-gradient-to-br from-[hsl(148,41%,58%)]/10 via-transparent to-[hsl(210,72%,25%)]/10 rounded-xl p-0.5 transition-all duration-500 hover:shadow-[0_0_25px_hsl(148,41%,58%,0.3)] ${isPreview ? 'h-[140px]' : 'h-[175px]'}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(148,41%,58%)]/20 via-[hsl(148,41%,58%)]/20 to-[hsl(210,72%,25%)]/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative bg-white/80 backdrop-blur-sm p-4 rounded-xl h-full flex items-center border border-[hsl(146,51%,91%)]/50">
                 <div className="flex items-center space-x-4 w-full">

@@ -24,7 +24,7 @@ const PortfolioSection = ({ content = [] }) => {
     >
       {/* Background decoration */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[url('''/LandingPage-OmahIot/grid.svg''')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-10"></div>
       </div>
 
       <div className="container mx-auto px-4 relative">
