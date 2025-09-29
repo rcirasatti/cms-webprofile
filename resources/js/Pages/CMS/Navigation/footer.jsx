@@ -41,7 +41,7 @@ export default function FooterCMS({ auth, contents, flash }) {
                             <div>
                                 <button
                                     onClick={() => setShowForm(true)}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                 >
                                     Edit Footer Content
                                 </button>
@@ -55,7 +55,7 @@ export default function FooterCMS({ auth, contents, flash }) {
                                 <p className="text-gray-600 mb-3">Get started by adding your footer content.</p>
                                 <button
                                     onClick={() => setShowForm(true)}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                 >
                                     Setup Footer Content
                                 </button>

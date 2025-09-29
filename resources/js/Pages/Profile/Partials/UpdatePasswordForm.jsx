@@ -2,13 +2,14 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
+import { useToast } from '@/Components/ui/Toast';
 
 export default function UpdatePasswordForm({ className = '' }) {
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
+    const { showSuccess, showError } = useToast();
 
     const {
         data,
@@ -17,7 +18,6 @@ export default function UpdatePasswordForm({ className = '' }) {
         put,
         reset,
         processing,
-        recentlySuccessful,
     } = useForm({
         current_password: '',
         password: '',
@@ -29,8 +29,12 @@ export default function UpdatePasswordForm({ className = '' }) {
 
         put(route('password.update'), {
             preserveScroll: true,
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset();
+                showSuccess('Password updated successfully!');
+            },
             onError: (errors) => {
+                showError('Failed to update password. Please check your inputs.');
                 if (errors.password) {
                     reset('password', 'password_confirmation');
                     passwordInput.current.focus();
@@ -123,18 +127,6 @@ export default function UpdatePasswordForm({ className = '' }) {
 
                 <div className="flex items-center gap-4">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Saved.
-                        </p>
-                    </Transition>
                 </div>
             </form>
         </section>

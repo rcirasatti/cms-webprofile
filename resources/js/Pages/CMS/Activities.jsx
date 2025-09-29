@@ -7,7 +7,7 @@ export default function Activities({ activities = [] }) {
         <SidebarLayout>
             <Head title="Activities" />
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-bold text-gray-900">All Activities</h1>
@@ -19,12 +19,12 @@ export default function Activities({ activities = [] }) {
                     <div className="space-y-4">
                         {activities.length > 0 ? (
                             activities.map((activity, index) => (
-                                <div key={index} className="flex items-start space-x-3 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100">
-                                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-lg">
+                                <div key={index} className="flex items-start space-x-3 p-4 rounded-lg hover:bg-secondary/5 hover:shadow-md transition-all duration-300 border border-gray-100 group hover:scale-[1.01]">
+                                    <div className="flex-shrink-0 w-10 h-10 bg-secondary/15 group-hover:bg-secondary/25 group-hover:shadow-sm rounded-full flex items-center justify-center text-lg border border-secondary/20 group-hover:border-secondary/40 transition-all duration-300 group-hover:scale-110">
                                         {activity.icon || '📝'}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                                        <p className="text-sm font-medium text-gray-900 group-hover:text-secondary transition-colors duration-300">{activity.action}</p>
                                         <p className="text-xs text-gray-500">{activity.time}</p>
                                     </div>
                                 </div>

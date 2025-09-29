@@ -32,7 +32,7 @@ export default function SidebarLayout({ children }) {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-50">
             {/* Top Navbar - Full Width from Left Edge - Fixed */}
             <nav className="bg-white shadow fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200">
                 <div className="max-w-7xl mx-auto">
@@ -43,7 +43,7 @@ export default function SidebarLayout({ children }) {
                             <button
                                 onClick={() => setSidebarOpen(!sidebarOpen)}
                                 aria-label="Toggle sidebar"
-                                className="mr-3 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 z-50"
+                                className="mr-3 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary z-50"
                             >
                                 <svg
                                     className="h-6 w-6"
@@ -71,7 +71,7 @@ export default function SidebarLayout({ children }) {
 
                             <div className="flex items-center">
                                 <Link href="/" className="flex items-center">
-                                    <ApplicationLogo className="w-8 h-8 text-green-600" />
+                                    <ApplicationLogo className="w-8 h-8 text-primary" />
                                     <span className="ml-2 text-xl font-bold text-gray-800">
                                         OmahIoT CMS
                                     </span>
@@ -82,7 +82,7 @@ export default function SidebarLayout({ children }) {
                         <div className="flex items-center space-x-4">
                             <Link
                                 href="/"
-                                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none"
+                                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-secondary-foreground bg-secondary hover:bg-secondary/90 hover:shadow-lg hover:scale-105 focus:outline-none transition-all duration-300"
                                 target="_blank"
                             >
                                 View Website
@@ -90,7 +90,7 @@ export default function SidebarLayout({ children }) {
                             {user ? (
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <button className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none">
+                                        <button className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none transition-colors">
                                             <span className="mr-2">
                                                 {user.name}
                                             </span>
@@ -126,7 +126,7 @@ export default function SidebarLayout({ children }) {
                             ) : (
                                 <Link
                                     href={route("login")}
-                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors"
                                 >
                                     Login
                                 </Link>
@@ -139,7 +139,7 @@ export default function SidebarLayout({ children }) {
             <div className="flex">
                 {/* Sidebar - Below Navbar */}
                 <aside
-                    className={`bg-white shadow-md fixed left-0 top-16 bottom-0 overflow-y-auto z-40 transition-transform duration-300 ease-in-out w-64 ${
+                    className={`bg-white shadow-md fixed left-0 top-16 bottom-0 overflow-y-auto z-40 transition-transform duration-300 ease-in-out w-64 border-r border-gray-200 ${
                         sidebarOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
                 >
@@ -150,9 +150,9 @@ export default function SidebarLayout({ children }) {
                                 <li key={section.route}>
                                     <Link
                                         href={route(section.route)}
-                                        className={`flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 ${
+                                        className={`flex items-center p-2 text-base font-normal rounded-lg hover:bg-gradient-to-r hover:from-[hsl(210,72%,35%)]/10 hover:via-[hsl(148,41%,45%)]/10 hover:to-[hsl(146,51%,75%)]/10 hover:text-[hsl(210,72%,35%)] hover:shadow-md hover:scale-105 transition-all duration-300 ${
                                             route().current(section.route)
-                                                ? "bg-blue-100 text-blue-600"
+                                                ? "bg-gradient-to-r from-[hsl(210,72%,35%)] via-[hsl(148,41%,45%)]/80 to-[hsl(146,51%,75%)] text-white shadow-lg font-semibold"
                                                 : "text-gray-700"
                                         }`}
                                     >
@@ -166,7 +166,7 @@ export default function SidebarLayout({ children }) {
                         </ul>
 
                         {/* Website Sections - with clear separator */}
-                        <div className="border-t pt-4">
+                        <div className="border-t border-gray-200 pt-4">
                             <div className="px-2 mb-3 bg-gray-100 py-2 rounded-md">
                                 <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide">
                                     Website Sections
@@ -177,9 +177,9 @@ export default function SidebarLayout({ children }) {
                                     <li key={section.route}>
                                         <Link
                                             href={route(section.route)}
-                                            className={`flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 ${
+                                            className={`flex items-center p-2 text-base font-normal rounded-lg hover:bg-gradient-to-r hover:from-[hsl(210,72%,35%)]/10 hover:via-[hsl(148,41%,45%)]/10 hover:to-[hsl(146,51%,75%)]/10 hover:text-[hsl(210,72%,35%)] hover:shadow-md hover:scale-105 transition-all duration-300 ${
                                                 route().current(section.route)
-                                                    ? "bg-blue-100 text-blue-600"
+                                                    ? "bg-gradient-to-r from-[hsl(210,72%,35%)] via-[hsl(148,41%,45%)]/80 to-[hsl(146,51%,75%)] text-white shadow-lg font-semibold"
                                                     : "text-gray-700"
                                             }`}
                                         >

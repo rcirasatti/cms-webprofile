@@ -12,14 +12,7 @@ class CmsController extends Controller
 {
     public function sections()
     {
-        $sections = LandingPageContent::select('section')
-            ->distinct()
-            ->orderBy('section')
-            ->pluck('section');
-
-        return Inertia::render('CMS/General/sections', [
-            'sections' => $sections
-        ]);
+        return \Illuminate\Support\Facades\Redirect::route('dashboard');
     }
 
     public function sectionContent($section)
@@ -405,7 +398,7 @@ class CmsController extends Controller
     public function portfolio()
     {
         $contents = LandingPageContent::bySection('portfolio')->ordered()->get();
-        return Inertia::render('CMS/Portfolio/table', ['contents' => $contents]);
+        return Inertia::render('CMS/Portfolio/index', ['contents' => $contents]);
     }
 
     public function contact()

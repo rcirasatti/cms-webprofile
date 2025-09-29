@@ -18,11 +18,11 @@ export default function About({ auth, contents }) {
 
             <div className="py-8">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200">
                         <div className="p-4 text-gray-900">
                             <div className="flex justify-between items-center mb-4">
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-800">
+                                    <h1 className="text-2xl font-bold text-gray-900">
                                         About Section
                                     </h1>
                                     <p className="text-gray-600">
@@ -32,7 +32,7 @@ export default function About({ auth, contents }) {
                                 <div className="flex space-x-3">
                                     <button
                                         onClick={() => setShowForm(true)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                     >
                                         Edit About Content
                                     </button>
@@ -52,7 +52,7 @@ export default function About({ auth, contents }) {
                                     </p>
                                     <button
                                         onClick={() => setShowForm(true)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                     >
                                         Edit About Content
                                     </button>
@@ -64,9 +64,9 @@ export default function About({ auth, contents }) {
                                         <nav className="-mb-px flex space-x-8">
                                             <button
                                                 onClick={() => setActiveTab('main')}
-                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                                                     activeTab === 'main'
-                                                        ? 'border-blue-500 text-blue-600'
+                                                        ? 'border-primary text-primary'
                                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                                 }`}
                                             >
@@ -74,9 +74,9 @@ export default function About({ auth, contents }) {
                                             </button>
                                             <button
                                                 onClick={() => setActiveTab('features')}
-                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                                                     activeTab === 'features'
-                                                        ? 'border-blue-500 text-blue-600'
+                                                        ? 'border-primary text-primary'
                                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                                 }`}
                                             >
@@ -84,9 +84,9 @@ export default function About({ auth, contents }) {
                                             </button>
                                             <button
                                                 onClick={() => setActiveTab('media')}
-                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                                                     activeTab === 'media'
-                                                        ? 'border-blue-500 text-blue-600'
+                                                        ? 'border-primary text-primary'
                                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                                 }`}
                                             >

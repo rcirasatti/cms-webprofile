@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "@inertiajs/react";
+import { useToast } from '../../../Components/ui/Toast';
 
 export default function ProjectForm({ project, onCancel }) {
+    const { showSuccess, showError } = useToast();
     const { data, setData, post, put, patch, processing, errors } = useForm({
         title: project?.title || "",
         category: project?.category || "",
@@ -28,12 +30,24 @@ export default function ProjectForm({ project, onCancel }) {
         if (project) {
             patch(route("cms.projects.update", project.id), {
                 data: formData,
-                onSuccess: onCancel,
+                onSuccess: () => {
+                    showSuccess('Project updated successfully!');
+                    setTimeout(() => onCancel(), 1500);
+                },
+                onError: () => {
+                    showError('Failed to update project. Please check your inputs.');
+                }
             });
         } else {
             post(route("cms.projects.store"), {
                 data: formData,
-                onSuccess: onCancel,
+                onSuccess: () => {
+                    showSuccess('Project created successfully!');
+                    setTimeout(() => onCancel(), 1500);
+                },
+                onError: () => {
+                    showError('Failed to create project. Please check your inputs.');
+                }
             });
         }
     };
@@ -175,14 +189,14 @@ export default function ProjectForm({ project, onCancel }) {
                             <button
                                 type="button"
                                 onClick={onCancel}
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none"
+                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 hover:shadow-md hover:scale-105 focus:outline-none transition-all duration-300"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none disabled:opacity-50"
+                                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 hover:shadow-lg hover:scale-105 focus:outline-none disabled:opacity-50 transition-all duration-300"
                             >
                                 {processing
                                     ? "Saving..."

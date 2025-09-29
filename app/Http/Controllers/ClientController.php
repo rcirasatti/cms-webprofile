@@ -11,7 +11,7 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Client::ordered()->get();
-        return Inertia::render('CMS/Client/table', ['clients' => $clients]);
+        return Inertia::render('CMS/Client/index', ['clients' => $clients]);
     }
 
     public function store(Request $request)

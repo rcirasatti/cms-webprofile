@@ -6,10 +6,12 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
+import { useToast } from '@/Components/ui/Toast';
 
 export default function DeleteUserForm({ className = '' }) {
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
     const passwordInput = useRef();
+    const { showSuccess, showError } = useToast();
 
     const {
         data,
@@ -32,8 +34,14 @@ export default function DeleteUserForm({ className = '' }) {
 
         destroy(route('profile.destroy'), {
             preserveScroll: true,
-            onSuccess: () => closeModal(),
-            onError: () => passwordInput.current.focus(),
+            onSuccess: () => {
+                showSuccess('Account deleted successfully!');
+                closeModal();
+            },
+            onError: () => {
+                showError('Failed to delete account. Please check your password.');
+                passwordInput.current.focus();
+            },
             onFinish: () => reset(),
         });
     };

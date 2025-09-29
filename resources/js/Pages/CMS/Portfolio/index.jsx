@@ -1,187 +1,426 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ContentForm from '@/Components/ui/ContentForm';
-import { Head, Link } from '@inertiajs/react';
-import { useForm } from '@inertiajs/react';
+import PortfolioForm from './form';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { useToast } from '@/Components/ui/Toast';
 
-export default function Portfolio({ auth, contents }) {
+export default function PortfolioTable({ auth, portfolios }) {
     const [showForm, setShowForm] = useState(false);
-    const [editingContent, setEditingContent] = useState(null);
+    const [editingPortfolio, setEditingPortfolio] = useState(null);
+    const [viewingPortfolio, setViewingPortfolio] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deletingContent, setDeletingContent] = useState(null);
-    const { delete: deleteContent } = useForm();
+    const [deletingPortfolio, setDeletingPortfolio] = useState(null);
+    const { delete: deletePortfolio } = useForm();
+    const { showSuccess, showError } = useToast();
 
-    const handleEdit = (content) => {
-        setEditingContent(content);
+    // UI state for search and pagination (match clients)
+    const [query, setQuery] = useState('');
+    const [perPage, setPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Ensure portfolios is always an array
+    const portfolioList = Array.isArray(portfolios) ? portfolios : [];
+
+    // Filter + paginate
+    const filtered = portfolioList.filter(p => (p.title || '').toLowerCase().includes(query.toLowerCase()));
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const startIndex = (currentPage - 1) * perPage;
+    const paginated = filtered.slice(startIndex, startIndex + perPage);
+
+    const handleEdit = (portfolio) => {
+        setEditingPortfolio(portfolio);
         setShowForm(true);
     };
 
-    const handleDelete = (content) => {
-        setDeletingContent(content);
+    const handleView = (portfolio) => {
+        setViewingPortfolio(portfolio);
+        setShowViewModal(true);
+    };
+
+    const handleDelete = (portfolio) => {
+        setDeletingPortfolio(portfolio);
         setShowDeleteModal(true);
     };
 
     const confirmDelete = () => {
-        if (deletingContent) {
-            deleteContent(route('cms.content.destroy', deletingContent.id));
-            setShowDeleteModal(false);
-            setDeletingContent(null);
+        if (deletingPortfolio) {
+            deletePortfolio(route('cms.portfolios.destroy', deletingPortfolio.id), {
+                onSuccess: () => {
+                    showSuccess('Portfolio deleted successfully!');
+                    setShowDeleteModal(false);
+                    setDeletingPortfolio(null);
+                },
+                onError: () => {
+                    showError('Failed to delete portfolio. Please try again.');
+                }
+            });
         }
     };
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
-        setDeletingContent(null);
+        setDeletingPortfolio(null);
     };
 
     const handleCloseForm = () => {
         setShowForm(false);
-        setEditingContent(null);
+        setEditingPortfolio(null);
     };
 
-    const portfolioItems = contents.filter(content => content.key.startsWith('portfolio_'));
+    const handleCloseViewModal = () => {
+        setShowViewModal(false);
+        setViewingPortfolio(null);
+    };
 
     return (
         <SidebarLayout>
-            <Head title="Portfolio Section - CMS" />
+            <Head title="Portfolios - CMS" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            <div className="flex justify-between items-center mb-6">
-                                <div>
-                                    <h1 className="text-2xl font-bold text-gray-800">Portfolio Section</h1>
-                                    <p className="text-gray-600">Showcase your portfolio and work samples</p>
-                                </div>
-                                <div className="flex space-x-3">
-                                    <Link
-                                        href={route('cms.sections')}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                                    >
-                                        ← Back to Sections
-                                    </Link>
-                                    <button
-                                        onClick={() => setShowForm(true)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        Add Portfolio Item
-                                    </button>
-                                </div>
+            <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-800">Portfolios</h1>
+                            <p className="text-gray-600">Manage portfolio items and showcase projects</p>
+
+                            {/* Per-page selector under subtitle (left) */}
+                            <div className="mt-3">
+                                <select
+                                    value={perPage}
+                                    onChange={(e) => { setPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                                    className="border rounded-md px-3 py-2 text-sm w-15"
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                </select>
                             </div>
+                        </div>
 
-                            <div className="space-y-4">
-                                {contents.map((content) => (
-                                    <div key={content.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                        {content.key}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">Order: {content.order}</span>
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        content.is_active 
-                                                            ? 'bg-green-100 text-green-800' 
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {content.is_active ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-900 mb-2 font-medium">{content.value}</p>
-                                                {content.metadata && Object.keys(content.metadata).length > 0 && (
-                                                    <div className="text-sm text-gray-600 space-y-1">
-                                                        {content.metadata.category && (
-                                                            <p><strong>Category:</strong> {content.metadata.category}</p>
-                                                        )}
-                                                        {content.metadata.image && (
-                                                            <p><strong>Image:</strong> {content.metadata.image}</p>
-                                                        )}
-                                                        {content.metadata.link && (
-                                                            <p><strong>Link:</strong> {content.metadata.link}</p>
-                                                        )}
-                                                    </div>
-                                                )}
+                        <div className="flex items-center ml-auto">
+                            <div className="flex flex-col items-end space-y-2">
+                                <button
+                                    onClick={() => {
+                                        setEditingPortfolio(null);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 hover:shadow-lg hover:scale-105 focus:outline-none transition-all duration-300"
+                                >
+                                    Add New Portfolio
+                                </button>
+
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
+                                    placeholder="Search portfolios..."
+                                    className="border rounded-md px-3 py-2 text-sm w-56"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Portfolios Table */}
+                    <div className="overflow-x-auto mt-6">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Title
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Category
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Image
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {paginated.map((portfolio) => (
+                                    <tr key={portfolio.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {portfolio.id}
                                             </div>
-                                            <div className="flex space-x-2 ml-4">
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-900 font-medium">
+                                                {portfolio.title}
+                                            </div>
+                                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                                                {portfolio.description?.substring(0, 50)}...
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-center align-middle">
+                                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {portfolio.category || 'No Category'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {portfolio.image_path ? (
+                                                <img
+                                                    src={portfolio.image_path}
+                                                    alt={portfolio.title}
+                                                    className="h-12 w-16 object-cover rounded"
+                                                />
+                                            ) : (
+                                                <div className="text-sm text-gray-500">No image</div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                portfolio.is_active
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {portfolio.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div className="flex space-x-2">
                                                 <button
-                                                    onClick={() => handleEdit(content)}
-                                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    onClick={() => handleView(portfolio)}
+                                                    className="text-green-600 hover:text-green-900 p-1"
+                                                    title="View Details"
                                                 >
-                                                    Edit
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(content)}
-                                                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                    onClick={() => handleEdit(portfolio)}
+                                                    className="text-indigo-600 hover:text-indigo-900 p-1"
+                                                    title="Edit"
                                                 >
-                                                    Delete
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(portfolio)}
+                                                    className="text-red-600 hover:text-red-900 p-1"
+                                                    title="Delete"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
                                                 </button>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </td>
+                                    </tr>
                                 ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {paginated.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500">No portfolios found. Create your first portfolio item!</p>
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    <div className="flex items-center justify-between mt-4">
+                        <div className="text-sm text-gray-600">Showing {Math.min(startIndex+1, total)} - {Math.min(startIndex + paginated.length, total)} of {total} portfolios</div>
+
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p-1))}
+                                disabled={currentPage === 1}
+                                className="px-2 py-1 border rounded disabled:opacity-50 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-300"
+                            >
+                                Prev
+                            </button>
+
+                            <div className="text-sm">
+                                Page {currentPage} / {totalPages}
                             </div>
 
-                            {/* Preview Section */}
-                            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Preview</h3>
-                                <div className="bg-white p-8 rounded-lg">
-                                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-                                        {contents.find(c => c.key === 'title')?.value || 'Our Portfolio'}
-                                    </h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {portfolioItems.map((portfolio, index) => (
-                                            <div key={index} className="group relative overflow-hidden rounded-lg shadow-lg bg-gray-200 aspect-video">
-                                                {portfolio.metadata?.image ? (
-                                                    <img 
-                                                        src={portfolio.metadata.image} 
-                                                        alt={portfolio.value}
-                                                        className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            e.target.nextElementSibling.style.display = 'flex';
-                                                        }}
-                                                    />
-                                                ) : null}
-                                                <div className="absolute inset-0 bg-gray-300 flex items-center justify-center text-gray-500">
-                                                    Portfolio Image
-                                                </div>
-                                                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                                                    <div className="text-center text-white">
-                                                        <h3 className="text-lg font-semibold mb-2">{portfolio.value}</h3>
-                                                        <p className="text-sm">{portfolio.metadata?.category || 'Category'}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content Guide */}
-                            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
-                                <div className="text-sm text-blue-700 space-y-1">
-                                    <p><strong>Key examples:</strong> title, portfolio_1, portfolio_2, etc.</p>
-                                    <p><strong>Metadata format:</strong> {"{"}"category": "Web Design", "image": "/path/to/image.jpg", "link": "#"{"}"}</p>
-                                    <p><strong>Tip:</strong> Use meaningful keys like portfolio_1, portfolio_2 for individual items</p>
-                                </div>
-                            </div>
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))}
+                                disabled={currentPage === totalPages}
+                                className="px-2 py-1 border rounded disabled:opacity-50 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-300"
+                            >
+                                Next
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* Portfolio Form Modal */}
             {showForm && (
-                <ContentForm
-                    content={editingContent}
-                    section="portfolio"
+                <PortfolioForm
+                    portfolio={editingPortfolio}
                     onCancel={handleCloseForm}
                 />
             )}
 
+            {/* Portfolio View Modal */}
+            {showViewModal && viewingPortfolio && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white max-h-screen overflow-y-auto">
+                        <div className="mt-3">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-medium text-gray-900">
+                                    Portfolio Details
+                                </h3>
+                                <button
+                                    onClick={handleCloseViewModal}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Basic Information */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Title
+                                        </label>
+                                        <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                                            {viewingPortfolio.title}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Category
+                                        </label>
+                                        <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                                            {viewingPortfolio.category || 'No Category'}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Order
+                                        </label>
+                                        <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                                            {viewingPortfolio.order}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Status
+                                        </label>
+                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                            viewingPortfolio.is_active
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                        }`}>
+                                            {viewingPortfolio.is_active ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Image and Description */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Image
+                                        </label>
+                                        {viewingPortfolio.image_path ? (
+                                            <img
+                                                src={viewingPortfolio.image_path}
+                                                alt={viewingPortfolio.title}
+                                                className="w-full h-32 object-cover rounded-md"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                                                <span className="text-gray-500">No image</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Description
+                                        </label>
+                                        <div className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md max-h-32 overflow-y-auto">
+                                            {viewingPortfolio.description}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Tags */}
+                            <div className="mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Technologies/Tags
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {viewingPortfolio.tags && viewingPortfolio.tags.length > 0 ? (
+                                        viewingPortfolio.tags.map((tag, index) => (
+                                            <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                                                {tag}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-gray-500">No tags</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Features */}
+                            <div className="mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Key Features/Advantages
+                                </label>
+                                <div className="space-y-2">
+                                    {viewingPortfolio.features && viewingPortfolio.features.length > 0 ? (
+                                        viewingPortfolio.features.map((feature, index) => (
+                                            <div key={index} className="flex items-start bg-gray-50 px-3 py-2 rounded-md">
+                                                <div className="mr-3 mt-1 text-green-500">
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <span className="text-gray-900">{feature}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <span className="text-gray-500">No features</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Timestamps */}
+                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
+                                    <div>
+                                        <span className="font-medium">Created:</span> {new Date(viewingPortfolio.created_at).toLocaleString()}
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Updated:</span> {new Date(viewingPortfolio.updated_at).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Delete Confirmation Modal */}
-            {showDeleteModal && deletingContent && (
+            {showDeleteModal && deletingPortfolio && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
                     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                         <div className="mt-3 text-center">
@@ -190,23 +429,23 @@ export default function Portfolio({ auth, contents }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mt-2">Delete Content</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mt-2">Delete Portfolio Item</h3>
                             <div className="mt-2 px-7 py-3">
                                 <p className="text-sm text-gray-500">
-                                    Are you sure you want to delete content "<strong>{deletingContent.key}</strong>"? 
+                                    Are you sure you want to delete "<strong>{deletingPortfolio.title}</strong>"? 
                                     This action cannot be undone.
                                 </p>
                             </div>
                             <div className="flex justify-center space-x-4 px-4 py-3">
                                 <button
                                     onClick={cancelDelete}
-                                    className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 hover:shadow-md hover:scale-105 focus:outline-none transition-all duration-300"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={confirmDelete}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:shadow-lg hover:scale-105 transition-all duration-300"
                                 >
                                     Delete
                                 </button>

@@ -1,142 +1,119 @@
 import React, { useState } from 'react';
 import SidebarLayout from '@/Layouts/SidebarLayout';
-import ContentForm from '@/Components/ui/ContentForm';
-import { Head, Link } from '@inertiajs/react';
-import { useForm } from '@inertiajs/react';
+import ClientForm from './form';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { useToast } from '@/Components/ui/Toast';
 
-export default function Client({ auth, contents }) {
+export default function ClientTable({ auth, clients }) {
     const [showForm, setShowForm] = useState(false);
-    const [editingContent, setEditingContent] = useState(null);
+    const [editingClient, setEditingClient] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deletingContent, setDeletingContent] = useState(null);
-    const { delete: deleteContent } = useForm();
+    const [deletingClient, setDeletingClient] = useState(null);
+    const { delete: deleteClient } = useForm();
+    const { showSuccess, showError } = useToast();
 
-    const handleEdit = (content) => {
-        setEditingContent(content);
+    // UI state for search and pagination
+    const [query, setQuery] = useState('');
+    const [perPage, setPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const handleEdit = (client) => {
+        setEditingClient(client);
         setShowForm(true);
     };
 
-    const handleDelete = (content) => {
-        setDeletingContent(content);
+    const handleDelete = (client) => {
+        setDeletingClient(client);
         setShowDeleteModal(true);
     };
 
     const confirmDelete = () => {
-        if (deletingContent) {
-            deleteContent(route('cms.content.destroy', deletingContent.id));
-            setShowDeleteModal(false);
-            setDeletingContent(null);
+        if (deletingClient) {
+            deleteClient(route('cms.clients.destroy', deletingClient.id), {
+                onSuccess: () => {
+                    showSuccess('Client deleted successfully!');
+                    setShowDeleteModal(false);
+                    setDeletingClient(null);
+                },
+                onError: () => {
+                    showError('Failed to delete client. Please try again.');
+                }
+            });
         }
     };
 
     const cancelDelete = () => {
         setShowDeleteModal(false);
-        setDeletingContent(null);
+        setDeletingClient(null);
     };
 
     const handleCloseForm = () => {
         setShowForm(false);
-        setEditingContent(null);
+        setEditingClient(null);
     };
 
-    // Group clients by their ID number (client_1, client_2, etc.)
-    const clientsMap = {};
-    const otherContents = [];
-    
-    contents.forEach(content => {
-        if (content.key.startsWith('client_')) {
-            const match = content.key.match(/client_(\d+)_(.+)/);
-            if (match) {
-                const clientId = match[1];
-                const field = match[2];
-                
-                if (!clientsMap[clientId]) {
-                    clientsMap[clientId] = { id: clientId };
-                }
-                
-                clientsMap[clientId][field] = content.value;
-                clientsMap[clientId][`${field}_content_id`] = content.id;
-                clientsMap[clientId][`${field}_content`] = content;
-                if (content.metadata) {
-                    clientsMap[clientId][`${field}_metadata`] = content.metadata;
-                }
-            } else if (content.key.match(/client_\d+$/)) {
-                // Handle client_1, client_2 directly
-                const clientId = content.key.replace('client_', '');
-                
-                if (!clientsMap[clientId]) {
-                    clientsMap[clientId] = { id: clientId };
-                }
-                
-                clientsMap[clientId]['name'] = content.value;
-                clientsMap[clientId]['name_content_id'] = content.id;
-                clientsMap[clientId]['name_content'] = content;
-                
-                if (content.metadata && content.metadata.logo) {
-                    clientsMap[clientId]['logo'] = content.metadata.logo;
-                }
-            }
-        } else {
-            otherContents.push(content);
-        }
-    });
-    
-    // Convert to array for easier mapping
-    const clients = Object.values(clientsMap);
-    const title = contents.find(c => c.key === 'title')?.value || 'Our Clients';
+    // Filter clients by search query (name)
+    const filtered = clients.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const startIndex = (currentPage - 1) * perPage;
+    const paginated = filtered.slice(startIndex, startIndex + perPage);
 
     return (
-        <SidebarLayout user={auth.user}>
-            <Head title="Clients Section - CMS" />
+        <SidebarLayout>
+            <Head title="Clients - CMS" />
 
             <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div className="p-6">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-800">Clients Section</h1>
+                            <h1 className="text-2xl font-bold text-gray-800">Clients</h1>
                             <p className="text-gray-600">Manage client logos and information</p>
-                        </div>
-                        <div className="flex space-x-3">
-                            <Link
-                                href={route('cms.sections')}
-                                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                                ← Back to Sections
-                            </Link>
-                            <button
-                                onClick={() => {
-                                    setEditingContent(null);
-                                    setShowForm(true);
-                                }}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                Add New Client
-                            </button>
-                        </div>
-                    </div>
 
-                    {/* Title Setting */}
-                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h2 className="text-lg font-medium text-gray-900">Section Title: {title}</h2>
+                            {/* Per-page selector under subtitle (left) */}
+                            <div className="mt-3">
+                                <select
+                                    value={perPage}
+                                    onChange={(e) => { setPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                                    className="border rounded-md px-3 py-2 text-sm w-15"
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                </select>
                             </div>
-                            <button
-                                onClick={() => handleEdit(contents.find(c => c.key === 'title'))}
-                                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
-                            >
-                                Edit Title
-                            </button>
+                        </div>
+
+                        <div className="flex items-center space-x-3 ml-auto">
+                            <div className="flex flex-col items-end space-y-2">
+                                <button
+                                    onClick={() => {
+                                        setEditingClient(null);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 hover:shadow-lg hover:scale-105 focus:outline-none transition-all duration-300"
+                                >
+                                    Add New Client
+                                </button>
+
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
+                                    placeholder="Search clients..."
+                                    className="border rounded-md px-3 py-2 text-sm w-56"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Clients Table */}
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto mt-6">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Client ID
+                                        ID
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Name
@@ -153,10 +130,8 @@ export default function Client({ auth, contents }) {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {clients.map((client) => {
-                                    const content = client.name_content;
-                                    return (
-                                    <tr key={client.id}>
+                                    {paginated.map((client) => (
+                                        <tr key={client.id}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
                                                 {client.id}
@@ -164,50 +139,56 @@ export default function Client({ auth, contents }) {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-sm text-gray-900">
-                                                {client.name || '-'}
+                                                {client.name}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {client.logo ? (
+                                            {client.logo_path ? (
                                                 <img 
-                                                    src={client.logo} 
-                                                    alt={client.name || `Client ${client.id}`}
-                                                    className="h-10 w-16 object-contain rounded"
+                                                    src={client.logo_path} 
+                                                    alt={client.name}
+                                                    className="h-10 w-16 object-contain"
                                                 />
                                             ) : (
                                                 <div className="text-sm text-gray-500">No logo</div>
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            {content && (
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                    content.is_active 
-                                                        ? 'bg-green-100 text-green-800' 
-                                                        : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                    {content.is_active ? 'Active' : 'Inactive'}
-                                                </span>
-                                            )}
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                client.is_active 
+                                                    ? 'bg-green-100 text-green-800' 
+                                                    : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {client.is_active ? 'Active' : 'Inactive'}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div className="flex space-x-2">
                                                 <button
-                                                    onClick={() => handleEdit(client.name_content)}
-                                                    className="text-blue-600 hover:text-blue-800"
+                                                    onClick={() => handleEdit(client)}
+                                                    className="text-indigo-600 hover:text-indigo-900 hover:scale-110 p-1 transition-all duration-300"
+                                                    title="Edit"
                                                 >
-                                                    Edit
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
                                                 </button>
+
                                                 <button
-                                                    onClick={() => handleDelete(client.name_content)}
-                                                    className="text-red-600 hover:text-red-800"
+                                                    onClick={() => handleDelete(client)}
+                                                    className="text-red-600 hover:text-red-900 hover:scale-110 p-1 transition-all duration-300"
+                                                    title="Delete"
                                                 >
-                                                    Delete
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                )})}
-                                {clients.length === 0 && (
+                                ))}
+                                
+                                {paginated.length === 0 && (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
                                             No clients found. Click "Add New Client" to create one.
@@ -218,28 +199,45 @@ export default function Client({ auth, contents }) {
                         </table>
                     </div>
 
-                    {/* Content Guide */}
-                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 className="text-lg font-medium text-blue-800 mb-2">Content Guide</h4>
-                        <div className="text-sm text-blue-700 space-y-1">
-                            <p><strong>Key examples:</strong> title, client_1, client_2, etc.</p>
-                            <p><strong>Metadata format:</strong> {"{"}"logo": "/path/to/logo.png", "website": "https://client.com", "description": "Client description"{"}"}</p>
-                            <p><strong>Tip:</strong> Use meaningful keys like client_1, client_2 for individual clients</p>
+                    {/* Pagination */}
+                    <div className="flex items-center justify-between mt-4">
+                        <div className="text-sm text-gray-600">Showing {Math.min(startIndex+1, total)} - {Math.min(startIndex + paginated.length, total)} of {total} clients</div>
+
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p-1))}
+                                disabled={currentPage === 1}
+                                className="px-2 py-1 border rounded disabled:opacity-50 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-300"
+                            >
+                                Prev
+                            </button>
+
+                            <div className="text-sm">
+                                Page {currentPage} / {totalPages}
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))}
+                                disabled={currentPage === totalPages}
+                                className="px-2 py-1 border rounded disabled:opacity-50 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-300"
+                            >
+                                Next
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
+            
+            {/* Form Modal */}
             {showForm && (
-                <ContentForm
-                    content={editingContent}
-                    section="client"
+                <ClientForm
+                    client={editingClient}
                     onCancel={handleCloseForm}
                 />
             )}
 
             {/* Delete Confirmation Modal */}
-            {showDeleteModal && deletingContent && (
+            {showDeleteModal && deletingClient && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
                     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                         <div className="mt-3 text-center">
@@ -248,23 +246,23 @@ export default function Client({ auth, contents }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mt-2">Delete Content</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mt-2">Delete Client</h3>
                             <div className="mt-2 px-7 py-3">
                                 <p className="text-sm text-gray-500">
-                                    Are you sure you want to delete content "<strong>{deletingContent.key}</strong>"? 
+                                    Are you sure you want to delete "<strong>{deletingClient.name}</strong>"? 
                                     This action cannot be undone.
                                 </p>
                             </div>
                             <div className="flex justify-center space-x-4 px-4 py-3">
                                 <button
                                     onClick={cancelDelete}
-                                    className="px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 hover:shadow-md hover:scale-105 focus:outline-none transition-all duration-300"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={confirmDelete}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300"
                                 >
                                     Delete
                                 </button>

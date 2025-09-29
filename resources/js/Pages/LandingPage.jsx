@@ -55,6 +55,40 @@ export default function LandingPage({ content = {} }) {
                 <ContactSection content={content.contact || []} />
                 <Footer content={content.footer || []} />
             </div>
+
+            {/* Structured Data for SEO */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Organization",
+                        "name": "OmahIoT",
+                        "url": "https://omahiot.com",
+                        "logo": "https://omahiot.com/assets/images/logo_omahiot.png",
+                        "description": "Innovative IoT Solutions for Agriculture, Aquaculture & Urban Development",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "streetAddress": "Jl. Turus Asri IV No. 6, Bulusan",
+                            "addressLocality": "Semarang",
+                            "addressRegion": "Jawa Tengah",
+                            "postalCode": "50277",
+                            "addressCountry": "ID"
+                        },
+                        "contactPoint": {
+                            "@type": "ContactPoint",
+                            "telephone": "+62-8127-6253-242",
+                            "contactType": "customer support",
+                            "email": "omahiot@gmail.com"
+                        },
+                        "sameAs": [
+                            "https://www.instagram.com/omahiot/",
+                            "https://www.linkedin.com/company/cv-omah-iot",
+                            "https://www.youtube.com/@omahiot3953"
+                        ]
+                    })
+                }}
+            />
         </main>
     );
 }

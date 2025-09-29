@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useToast } from '../../../Components/ui/Toast';
 
 export default function PortfolioForm({ portfolio, onCancel }) {
     const formKey = portfolio ? `edit-${portfolio.id}` : 'create';
+    const { showSuccess, showError } = useToast();
 
     const { data, setData, post, put, patch, processing, errors, reset } = useForm({
         title: portfolio?.title || '',
@@ -38,12 +40,24 @@ export default function PortfolioForm({ portfolio, onCancel }) {
         if (portfolio) {
             patch(route('cms.portfolios.update', portfolio.id), {
                 data: formData,
-                onSuccess: onCancel,
+                onSuccess: () => {
+                    showSuccess('Portfolio updated successfully!');
+                    onCancel();
+                },
+                onError: (errors) => {
+                    showError('Failed to update portfolio. Please check your inputs.');
+                }
             });
         } else {
             post(route('cms.portfolios.store'), {
                 data: formData,
-                onSuccess: onCancel,
+                onSuccess: () => {
+                    showSuccess('Portfolio created successfully!');
+                    onCancel();
+                },
+                onError: (errors) => {
+                    showError('Failed to create portfolio. Please check your inputs.');
+                }
             });
         }
     };
@@ -220,14 +234,14 @@ export default function PortfolioForm({ portfolio, onCancel }) {
                             <button
                                 type="button"
                                 onClick={onCancel}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 hover:shadow-md hover:scale-105 focus:outline-none transition-all duration-300"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 hover:shadow-lg hover:scale-105 focus:outline-none disabled:opacity-50 transition-all duration-300"
                             >
                                 {processing ? 'Saving...' : (portfolio ? 'Update' : 'Create')}
                             </button>

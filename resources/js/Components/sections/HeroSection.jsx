@@ -40,12 +40,12 @@ return (
             {title.includes('OmahIoT') ? (
                 <>
                 {title.replace('OmahIoT', '').trim()}{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[hsl(146,51%,91%)] to-white animate-gradient">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[hsl(146,51%,91%)] to-white">
                     OmahIoT
                 </span>
                 </>
             ) : (
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[hsl(146,51%,91%)] to-white animate-gradient">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[hsl(146,51%,91%)] to-white">
                 {title}
                 </span>
             )}

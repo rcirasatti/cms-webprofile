@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PortfolioController extends Controller
@@ -26,11 +27,8 @@ class PortfolioController extends Controller
             ];
         });
 
-        return Inertia::render('CMS/Portfolio/table', [
+        return Inertia::render('CMS/Portfolio/index', [
             'portfolios' => $portfolios,
-            'auth' => [
-                'user' => auth()->user()
-            ]
         ]);
     }
 
@@ -105,5 +103,36 @@ class PortfolioController extends Controller
         $portfolio->delete();
 
         return redirect()->back()->with('success', 'Portfolio deleted successfully!');
+    }
+
+    /**
+     * Secure image upload with validation and sanitization
+     */
+    private function validateAndStoreImage($image, $directory = 'portfolio')
+    {
+        // Validate file type more strictly
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!in_array($image->getMimeType(), $allowedMimes)) {
+            throw new \Exception('Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.');
+        }
+        
+        // Validate file size (2MB max)
+        if ($image->getSize() > 2048 * 1024) {
+            throw new \Exception('File too large. Maximum size is 2MB.');
+        }
+        
+        // Check for malicious content (basic check)
+        $imageInfo = getimagesize($image->path());
+        if ($imageInfo === false) {
+            throw new \Exception('Invalid image file.');
+        }
+        
+        // Generate secure filename
+        $filename = Str::random(40) . '.' . $image->getClientOriginalExtension();
+        
+        // Store with proper path
+        $path = $image->storeAs("public/{$directory}", $filename);
+        
+        return "storage/{$directory}/{$filename}";
     }
 }

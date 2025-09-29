@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
-import Alert from '../../../Components/ui/Alert';
+import { useToast } from '../../../Components/ui/Toast';
 
 export default function HeroForm({ contents, onCancel }) {
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [showError, setShowError] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+    const { showSuccess, showError } = useToast();
     const initialImage =
         contents.find((c) => c.key === "background_image")?.value || "";
     const { data, setData, post, patch, processing, errors, reset } = useForm({
@@ -23,8 +21,7 @@ export default function HeroForm({ contents, onCancel }) {
         // Use useForm.post so Inertia will automatically send multipart/form-data
         post(route("cms.hero.update"), {
             onSuccess: () => {
-                setAlertMessage("Hero content updated successfully!");
-                setShowSuccess(true);
+                showSuccess("Hero content updated successfully!");
                 setTimeout(() => {
                     onCancel();
                     window.location.reload();
@@ -32,36 +29,13 @@ export default function HeroForm({ contents, onCancel }) {
             },
             onError: (errors) => {
                 console.error("Update failed:", errors);
-                setAlertMessage("Failed to update content. Please try again.");
-                setShowError(true);
+                showError("Failed to update content. Please try again.");
             },
         });
     };
 
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            {/* Success Alert */}
-            {showSuccess && (
-                <Alert 
-                    type="success" 
-                    message={alertMessage} 
-                    onClose={() => setShowSuccess(false)}
-                    autoClose={true}
-                    duration={2000}
-                />
-            )}
-
-            {/* Error Alert */}
-            {showError && (
-                <Alert 
-                    type="error" 
-                    message={alertMessage} 
-                    onClose={() => setShowError(false)}
-                    autoClose={true}
-                    duration={4000}
-                />
-            )}
-
             <div className="flex items-center justify-center min-h-full p-4">
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                     <div className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
@@ -71,7 +45,7 @@ export default function HeroForm({ contents, onCancel }) {
                             </h3>
                             <button
                                 onClick={onCancel}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 hover:scale-110 transition-all duration-300"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -185,14 +159,14 @@ export default function HeroForm({ contents, onCancel }) {
                             <button
                                 type="button"
                                 onClick={onCancel}
-                                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 hover:shadow-md hover:scale-105 focus:outline-none transition-all duration-300"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50"
                             >
                                 {processing ? "Saving..." : "Save Changes"}
                             </button>

@@ -151,4 +151,40 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+// SEO Routes
+Route::get('/sitemap.xml', function () {
+    $sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
+    $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    
+    // Main pages
+    $pages = [
+        ['url' => '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
+        ['url' => '/dashboard', 'priority' => '0.8', 'changefreq' => 'daily'],
+    ];
+    
+    foreach ($pages as $page) {
+        $sitemap .= '<url>';
+        $sitemap .= '<loc>' . url($page['url']) . '</loc>';
+        $sitemap .= '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        $sitemap .= '<changefreq>' . $page['changefreq'] . '</changefreq>';
+        $sitemap .= '<priority>' . $page['priority'] . '</priority>';
+        $sitemap .= '</url>';
+    }
+    
+    $sitemap .= '</urlset>';
+    
+    return response($sitemap, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
+// Robots.txt
+Route::get('/robots.txt', function () {
+    $robots = "User-agent: *\n";
+    $robots .= "Allow: /\n";
+    $robots .= "Disallow: /dashboard\n";
+    $robots .= "Disallow: /admin\n";
+    $robots .= "Sitemap: " . url('/sitemap.xml') . "\n";
+    
+    return response($robots, 200)->header('Content-Type', 'text/plain');
+})->name('robots');
+
 require __DIR__.'/auth.php';

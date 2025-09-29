@@ -1,4 +1,5 @@
 import React from "react";
+import ResponsiveImage from "../ui/ResponsiveImage";
 
 const PortfolioSection = ({ content = [] }) => {
   // Use CMS portfolio data ordered by database order
@@ -44,13 +45,11 @@ const PortfolioSection = ({ content = [] }) => {
         <div className="mb-20 bg-white/15 backdrop-blur-md rounded-3xl overflow-hidden border border-white/10">
           <div className="grid md:grid-cols-2 gap-0">
             <div className="relative overflow-hidden">
-              <img
+              <ResponsiveImage
                 src={featuredPortfolio.image_path}
                 alt={featuredPortfolio.title}
                 className="w-full h-full object-cover object-center"
-                onError={(e) => {
-                  e.target.src = "/assets/images/placeholder.jpg";
-                }}
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,72%,25%)]/80 to-transparent md:bg-gradient-to-b md:from-transparent md:to-[hsl(210,72%,25%)]/80"></div>
             </div>
@@ -122,13 +121,11 @@ const PortfolioSection = ({ content = [] }) => {
             {otherPortfolios.map((portfolio, index) => (
               <div key={portfolio.id} className="group bg-white/15 backdrop-blur-md rounded-xl overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-white/10">
                 <div className="relative h-60 overflow-hidden">
-                  <img
+                  <ResponsiveImage
                     src={portfolio.image_path}
                     alt={portfolio.title}
                     className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                    onError={(e) => {
-                      e.target.src = "/assets/images/placeholder.jpg";
-                    }}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,72%,25%)]/90 via-transparent to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
